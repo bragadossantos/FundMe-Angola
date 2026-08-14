@@ -1,0 +1,1287 @@
+<!-- Chosen Palette: Warm Neutral Harmony (Warm Sand/Off-White Background #F9F8F6, Deep Slate #1E293B, Soft Amber/Gold #D97706, Emerald #059669, Indigo #4F46E5) -->
+
+<!-- Application Structure Plan:
+  1. Header & Hero Dashboard: Visão geral executiva com métricas dinâmicas e ícones temáticos para cada setor estratégico.
+  2. Central de Filtros & Diretório Interativo de Contactos: Tabela e cartões responsivos de empresas com busca em tempo real, filtros multidimensionais e modal de detalhes com ação de cópia rápida.
+  3. Matriz de Interdependência do Ecossistema (Análise de Valor): Visualização interativa demonstrando sinergias industriais entre Oil & Gas, Telecom, TI e Logística.
+  4. Métricas e Gráficos do Mercado (Chart.js): Visualizações gráficas em canvas da distribuição setorial e métodos de recrutamento direto.
+  5. Guia Estratégico de Candidaturas e Conteúdo Local: Painel em abas sobre sistemas ATS, candidaturas espontâneas e regulação angolana de RH.
+  6. Mapeamento do Raio Operacional (50km): Esquema espacial dos polos estratégicos articulados ao Belas Business Park.
+  Esta estrutura otimiza a experiência do utilizador com ícones profissionais específicos de cada indústria. -->
+
+<!-- Visualization & Content Choices:
+  - Ícones de Interface e Setores: Font Awesome 6 (Web Font) -> Substituição completa de emojis por ícones vetoriais de alta precisão contextual (gas-pump, tower-cell, laptop-code, truck-fast).
+  - Diretório de Empresas: Cartões interativos HTML/CSS com JavaScript para filtragem imediata.
+  - Gráfico de Distribuição Setorial: Chart.js Canvas Donut Chart.
+  - Gráfico de Canais de Recrutamento: Chart.js Canvas Bar Chart.
+  - Matriz de Cadeia de Valor: Componentes interativos com JS para navegação nos fluxos operacionais.
+  - CONFIRMAÇÃO DE RESTRIÇÃO: Sem uso de SVG gráficos diretos. Sem uso de Mermaid JS. Uso exclusivo de HTML/CSS com Font Awesome WebFont, Canvas e elementos semânticos. -->
+
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecossistema Corporativo de Talatona & Grande Luanda</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Contextual Web Font Icons (Font Awesome 6) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #F9F8F6;
+      color: #1E293B;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      height: 320px;
+      max-height: 400px;
+    }
+    @media (min-width: 768px) {
+      .chart-container {
+        height: 350px;
+      }
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .tab-active {
+      border-bottom: 3px solid #D97706;
+      color: #D97706;
+      font-weight: 700;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #F1F5F9;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- Header / Navigation -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center text-white text-lg shadow-md">
+          <i class="fa-solid fa-city"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-slate-900 leading-tight">Mapeamento Corporativo de Talatona</h1>
+          <p class="text-xs text-slate-500">Diretório Interativo & Análise de Ecossistema (Raio de 50km do Belas Business Park)</p>
+        </div>
+      </div>
+      
+      <!-- Quick Navigation Tabs -->
+      <nav class="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
+        <button onclick="scrollToSection('directory-section')" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 text-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-address-book text-amber-600"></i> Diretório
+        </button>
+        <button onclick="scrollToSection('analytics-section')" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 text-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-chart-pie text-amber-600"></i> Análise & Gráficos
+        </button>
+        <button onclick="scrollToSection('valuechain-section')" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 text-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-diagram-project text-amber-600"></i> Cadeia de Valor
+        </button>
+        <button onclick="scrollToSection('recruitment-section')" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 text-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-briefcase text-amber-600"></i> Guia de Candidaturas
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 flex-grow w-full">
+
+    <!-- Hero & Executive Summary Section -->
+    <section class="bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
+      <div class="relative z-10 max-w-3xl space-y-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+          <i class="fa-solid fa-location-dot"></i> Epicentro: Belas Business Park, Talatona
+        </span>
+        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-snug">
+          Conectando Oportunidades no Hub Corporativo de Luanda
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+          Esta plataforma interativa compila o mapeamento estratégico das empresas de <strong>Telecomunicações</strong>, <strong>Petróleo & Gás</strong>, <strong>Logística</strong> e <strong>Tecnologia/Programação</strong> instaladas em Talatona e no seu raio operacional de 50 km. Todas as entidades listadas possuem recrutamento direto e privado (sem necessidade de concurso público estatal).
+        </p>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-slate-700/60 relative z-10">
+        <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>Empresas Mapeadas</span>
+            <i class="fa-solid fa-building text-amber-400"></i>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1" id="metric-total">31</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">Sedes e bases operacionais</div>
+        </div>
+        <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>Setores Chave</span>
+            <i class="fa-solid fa-layer-group text-emerald-400"></i>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400 mt-1">4</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">Energia, Telecom, TI, Logística</div>
+        </div>
+        <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>Raio de Impacto</span>
+            <i class="fa-solid fa-compass text-indigo-400"></i>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-indigo-400 mt-1">50 km</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">Talatona, SONILS, ZEE, Viana</div>
+        </div>
+        <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>Acesso Direto</span>
+            <i class="fa-solid fa-user-check text-amber-300"></i>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-amber-300 mt-1">100%</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">Sem concursos públicos</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: Interactive Directory & Filtering -->
+    <section id="directory-section" class="space-y-6">
+      <div class="border-l-4 border-amber-600 pl-4">
+        <h2 class="text-2xl font-bold text-slate-900">Diretório de Empresas & Contactos Operacionais</h2>
+        <p class="text-sm text-slate-600">
+          Explore a lista completa de empresas em Talatona e arredores. Utilize os filtros avançados e a pesquisa para encontrar e-mails de recrutamento, números de telefone e endereços exatos.
+        </p>
+      </div>
+
+      <!-- Controls & Filter Bar -->
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <!-- Search Input & Quick Sector Pills -->
+        <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div class="relative w-full md:w-96">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            <input 
+              type="text" 
+              id="search-input" 
+              placeholder="Pesquisar empresa, e-mail, contacto ou local..." 
+              class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition"
+              oninput="applyFilters()"
+            >
+          </div>
+
+          <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Filtrar Setor:</span>
+            <button onclick="setSectorFilter('all')" id="pill-all" class="sector-pill px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 text-white transition flex items-center gap-1.5">
+              <i class="fa-solid fa-border-all text-[11px]"></i> Todos
+            </button>
+            <button onclick="setSectorFilter('telecom')" id="pill-telecom" class="sector-pill px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-tower-cell text-[11px]"></i> Telecom
+            </button>
+            <button onclick="setSectorFilter('oilgas')" id="pill-oilgas" class="sector-pill px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-oil-well text-[11px]"></i> Petróleo & Gás
+            </button>
+            <button onclick="setSectorFilter('logistics')" id="pill-logistics" class="sector-pill px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-truck-fast text-[11px]"></i> Logística
+            </button>
+            <button onclick="setSectorFilter('software')" id="pill-software" class="sector-pill px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-laptop-code text-[11px]"></i> Tecnologia/TI
+            </button>
+          </div>
+        </div>
+
+        <!-- Secondary Dropdown Filters -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 text-xs">
+          <div>
+            <label class="block text-slate-500 font-medium mb-1">Categoria Institucional</label>
+            <select id="category-filter" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <option value="all">Todas as Categorias</option>
+              <option value="Privada Nacional">Privada Nacional</option>
+              <option value="Multinacional Privada">Multinacional Privada</option>
+              <option value="Estatal Comercial">Estatal Comercial / Parastatal</option>
+              <option value="Joint Venture">Joint Venture</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-slate-500 font-medium mb-1">Canal de Candidatura</label>
+            <select id="recruitment-filter" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <option value="all">Todos os Canais</option>
+              <option value="Email Direto">E-mail Direto</option>
+              <option value="Portal ATS / Site Global">Portal ATS / Site Global</option>
+              <option value="Portal de Candidaturas Espontâneas">Portal de Candidaturas Espontâneas</option>
+              <option value="Intermediado por Consultoria">Consultoria de RH</option>
+            </select>
+          </div>
+
+          <div class="flex items-end justify-between sm:justify-end gap-2">
+            <span id="results-count" class="text-slate-500 font-medium self-center">A apresentar 31 empresas</span>
+            <button onclick="resetFilters()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-semibold transition flex items-center gap-1.5">
+              <i class="fa-solid fa-rotate-right text-xs"></i> Limpar Filtros
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Company Cards Grid -->
+      <div id="company-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- JS dynamically populates content here -->
+      </div>
+
+      <!-- No Results State -->
+      <div id="no-results" class="hidden text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 space-y-3">
+        <i class="fa-solid fa-magnifying-glass text-4xl text-slate-300"></i>
+        <h3 class="text-lg font-bold text-slate-800">Nenhuma empresa encontrada</h3>
+        <p class="text-slate-500 text-sm">Tente ajustar os critérios de pesquisa ou limpar os filtros selecionados.</p>
+        <button onclick="resetFilters()" class="px-4 py-2 bg-amber-600 text-white rounded-xl text-sm font-semibold hover:bg-amber-700 transition inline-flex items-center gap-2">
+          <i class="fa-solid fa-rotate-right"></i> Restaurar Todos os Registos
+        </button>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Analytics & Visual Insights -->
+    <section id="analytics-section" class="space-y-6 pt-6">
+      <div class="border-l-4 border-amber-600 pl-4">
+        <h2 class="text-2xl font-bold text-slate-900">Análise Quantitativa e Indicadores do Mercado</h2>
+        <p class="text-sm text-slate-600">
+          Visualização gráfica da representatividade dos setores em Talatona e do perfil dos canais de submissão de candidaturas.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Chart 1: Sector Breakdown -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-chart-pie text-amber-600"></i> Distribuição Setorial Mapeada
+            </h3>
+            <span class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-semibold">Talatona & Raio 50km</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Representação percentual das empresas identificadas divididas entre as vertentes petrolífera, tecnologia, telecomunicações e suporte logístico.
+          </p>
+          <div class="chart-container">
+            <canvas id="sectorChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Recruitment Channel Breakdown -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-chart-column text-emerald-600"></i> Métodos de Recrutamento Predominantes
+            </h3>
+            <span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-semibold">Sem Concurso Estatal</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Mapeamento da forma de acesso aos processos seletivos (Sistemas ATS automatizados, e-mail direto de RH ou portais proprietários).
+          </p>
+          <div class="chart-container">
+            <canvas id="recruitmentChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Intersectoral Value Chain Matrix -->
+    <section id="valuechain-section" class="space-y-6 pt-6">
+      <div class="border-l-4 border-amber-600 pl-4">
+        <h2 class="text-2xl font-bold text-slate-900">Matriz de Interdependência do Ecossistema</h2>
+        <p class="text-sm text-slate-600">
+          Entenda como as empresas instaladas nos edifícios corporativos de Talatona (como o Belas Business Park) se articulam funcionalmente. Clique num setor para destacar o seu papel na cadeia de valor.
+        </p>
+      </div>
+
+      <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+        <!-- Interactive Value Chain Selector -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <button onclick="highlightChain('oilgas')" id="chain-btn-oilgas" class="chain-btn active-chain p-4 rounded-xl border text-left transition bg-amber-50 border-amber-500">
+            <div class="text-xl mb-2 text-amber-600"><i class="fa-solid fa-oil-well"></i></div>
+            <div class="font-bold text-slate-900 text-sm">Petróleo & Gás</div>
+            <div class="text-xs text-slate-500">Motor de Procura Principal</div>
+          </button>
+          
+          <button onclick="highlightChain('telecom')" id="chain-btn-telecom" class="chain-btn p-4 rounded-xl border border-slate-200 text-left transition hover:bg-slate-50">
+            <div class="text-xl mb-2 text-blue-600"><i class="fa-solid fa-tower-cell"></i></div>
+            <div class="font-bold text-slate-900 text-sm">Telecomunicações</div>
+            <div class="text-xs text-slate-500">Conectividade Crítica</div>
+          </button>
+
+          <button onclick="highlightChain('software')" id="chain-btn-software" class="chain-btn p-4 rounded-xl border border-slate-200 text-left transition hover:bg-slate-50">
+            <div class="text-xl mb-2 text-indigo-600"><i class="fa-solid fa-laptop-code"></i></div>
+            <div class="font-bold text-slate-900 text-sm">Software & TI</div>
+            <div class="text-xs text-slate-500">ERP & Digitalização</div>
+          </button>
+
+          <button onclick="highlightChain('logistics')" id="chain-btn-logistics" class="chain-btn p-4 rounded-xl border border-slate-200 text-left transition hover:bg-slate-50">
+            <div class="text-xl mb-2 text-emerald-600"><i class="fa-solid fa-truck-fast"></i></div>
+            <div class="font-bold text-slate-900 text-sm">Logística & Suporte</div>
+            <div class="text-xs text-slate-500">Movimentação Operacional</div>
+          </button>
+        </div>
+
+        <!-- Dynamic Value Chain Explanation Area -->
+        <div id="chain-details-box" class="bg-slate-50 p-6 rounded-xl border border-slate-200 space-y-4">
+          <!-- JS fills this content -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: Strategic Recruitment Guide & Local Content -->
+    <section id="recruitment-section" class="space-y-6 pt-6">
+      <div class="border-l-4 border-amber-600 pl-4">
+        <h2 class="text-2xl font-bold text-slate-900">Guia Prático de Candidaturas e Inserção Profissional</h2>
+        <p class="text-sm text-slate-600">
+          Orientações detalhadas para maximizar o sucesso na submissão de perfis para empresas em Talatona ao abrigo da legislação de Conteúdo Local e contratação privada.
+        </p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <!-- Tabs Bar -->
+        <div class="flex border-b border-slate-200 bg-slate-50 text-xs sm:text-sm font-semibold text-slate-600 overflow-x-auto">
+          <button onclick="switchGuideTab('ats')" id="tab-ats" class="guide-tab tab-active px-5 py-3.5 whitespace-nowrap focus:outline-none flex items-center gap-2">
+            <i class="fa-solid fa-robot"></i> Plataformas ATS Globais
+          </button>
+          <button onclick="switchGuideTab('spontaneous')" id="tab-spontaneous" class="guide-tab px-5 py-3.5 whitespace-nowrap focus:outline-none flex items-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> Portais Espontâneos
+          </button>
+          <button onclick="switchGuideTab('consultancies')" id="tab-consultancies" class="guide-tab px-5 py-3.5 whitespace-nowrap focus:outline-none flex items-center gap-2">
+            <i class="fa-solid fa-user-group"></i> Consultoras de RH em Talatona
+          </button>
+          <button onclick="switchGuideTab('localcontent')" id="tab-localcontent" class="guide-tab px-5 py-3.5 whitespace-nowrap focus:outline-none flex items-center gap-2">
+            <i class="fa-solid fa-scale-balanced"></i> Normas de Conteúdo Local
+          </button>
+        </div>
+
+        <!-- Tab Content Display -->
+        <div class="p-6 space-y-4 text-sm text-slate-700 leading-relaxed" id="guide-content-area">
+          <!-- JS dynamic content -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: Geographic Hub Locator (50km Radius Schematic) -->
+    <section class="space-y-6 pt-6">
+      <div class="border-l-4 border-amber-600 pl-4">
+        <h2 class="text-2xl font-bold text-slate-900">Geografia Corporativa: Belas Business Park & Raio Operacional</h2>
+        <p class="text-sm text-slate-600">
+          Articulação espacial entre as sedes administrativas no Belas Business Park e as bases técnicas na área metropolitana de Luanda.
+        </p>
+      </div>
+
+      <div class="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl shadow-xl space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-slate-800/90 p-5 rounded-xl border border-slate-700 space-y-3">
+            <div class="text-amber-400 font-bold text-base flex items-center gap-2">
+              <i class="fa-solid fa-building-user text-amber-400"></i> Centralidade Talatona
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              O Belas Business Park (Edifícios Luanda, Benguela, Cunene, Bengo, Cuanza Sul) abriga os centros de decisão executiva, diretoria financeira, RH e contratação de fornecedores.
+            </p>
+          </div>
+
+          <div class="bg-slate-800/90 p-5 rounded-xl border border-slate-700 space-y-3">
+            <div class="text-emerald-400 font-bold text-base flex items-center gap-2">
+              <i class="fa-solid fa-anchor text-emerald-400"></i> Nós Marítimos e Portuários
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              A <strong>Base da SONILS</strong> (Porto de Luanda) e o <strong>Terminal Multiuso DP World</strong> recebem o suporte administrativo de Talatona para logística offshore e desembarque de materiais.
+            </p>
+          </div>
+
+          <div class="bg-slate-800/90 p-5 rounded-xl border border-slate-700 space-y-3">
+            <div class="text-indigo-400 font-bold text-base flex items-center gap-2">
+              <i class="fa-solid fa-industry text-indigo-400"></i> Anel Industrial & ZEE
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              O <strong>Polo Industrial de Viana</strong>, a <strong>ZEE Luanda-Bengo</strong> e o <strong>Cacuaco</strong> concentram bases operacionais de suporte técnico, armazéns de químicos e tubagens.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Detail Modal for Selected Company -->
+  <div id="company-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 space-y-6 shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold p-1">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div id="modal-body">
+        <!-- JS fills detail view -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification for Copy Actions -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg text-xs font-semibold hidden z-50 flex items-center gap-2">
+    <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i> <span id="toast-message">Contacto copiado com sucesso!</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <p class="font-semibold text-slate-200">Portal de Mapeamento Corporativo de Talatona</p>
+        <p class="text-slate-500 mt-0.5">Informações e diretório compilados ao abrigo do regime de contratação privada angolano.</p>
+      </div>
+      <div class="text-right">
+        <p>Desenvolvido para fácil consulta e exploração dinâmica.</p>
+        <p class="text-slate-500 mt-0.5">Epicentro: Belas Business Park, Talatona, Luanda</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    // Complete Dataset of Mapped Companies
+    const companiesData = [
+      // Telecomunicações
+      {
+        id: 1,
+        name: "WiTelekom",
+        sector: "Telecomunicações",
+        sectorKey: "telecom",
+        category: "Multinacional Privada",
+        location: "Belas Business Park, Edifício Luanda, Escritório 202, 2º andar, Talatona",
+        phone: "(+244) 227 200 003",
+        email: "global.business@witelekom.ao / comercial@witelekom.ao",
+        recruitmentType: "Email Direto",
+        notes: "Fornecedora de conectividade empresarial e infraestrutura corporativa.",
+        tags: ["Fibra Ótica", "Conectividade", "Belas Business Park"]
+      },
+      {
+        id: 2,
+        name: "O.S. & Filhos",
+        sector: "Telecomunicações",
+        sectorKey: "telecom",
+        category: "Privada Nacional",
+        location: "Belas Business Park, Edifício Benguela R/C, Talatona",
+        phone: "(+244) 923 626 414",
+        email: "geral@osefilhos.co.ao",
+        recruitmentType: "Email Direto",
+        notes: "Integração de redes corporativas, cablagem estruturada e serviços técnicos.",
+        tags: ["Redes", "Cablagem", "Belas Business Park"]
+      },
+      {
+        id: 3,
+        name: "Unitel Angola",
+        sector: "Telecomunicações",
+        sectorKey: "telecom",
+        category: "Estatal Comercial",
+        location: "Sede Talatona / Rede Nacional (Raio 50 km)",
+        phone: "(+244) 19192 / (+244) 923 119 192",
+        email: "apoio.cliente@unitel.co.ao / recrutamentorh@unitel.st",
+        recruitmentType: "Portal de Candidaturas Espontâneas",
+        notes: "Líder de telecomunicações móveis e fixas em Angola.",
+        tags: ["Móvel", "Dados", "Sede Talatona"]
+      },
+      {
+        id: 4,
+        name: "Africell Angola",
+        sector: "Telecomunicações",
+        sectorKey: "telecom",
+        category: "Multinacional Privada",
+        location: "Sede e Escritórios Operacionais Luanda / Talatona",
+        phone: "Não Disponível",
+        email: "recruitment@africell.ao",
+        recruitmentType: "Email Direto",
+        notes: "Operadora móvel multinacional em expansão rápida. Envio direto com referência da vaga.",
+        tags: ["Rede Móvel", "5G", "Talatona"]
+      },
+      {
+        id: 5,
+        name: "Paratus Angola (ITA)",
+        sector: "Telecomunicações",
+        sectorKey: "telecom",
+        category: "Multinacional Privada",
+        location: "Patriota / Benfica, Luanda (Entorno de Talatona)",
+        phone: "(+244) 225 286 000",
+        email: "info.ao@paratus.africa / recrutamento@paratus.ao",
+        recruitmentType: "Email Direto",
+        notes: "Especialista em conectividade de banda larga, satélite VSAT e Data Centers.",
+        tags: ["VSAT", "Data Center", "Patriota"]
+      },
+      {
+        id: 6,
+        name: "MSTelcom",
+        sector: "Telecomunicações",
+        sectorKey: "telecom",
+        category: "Estatal Comercial",
+        location: "Centro de Telecomunicações (TCC), Bairro Petrangol, Luanda",
+        phone: "(+244) 226 621 000 / (+244) 222 633 859",
+        email: "atendimentoaocliente@mstelcom.co.ao / helpdesk@sonangol.co.ao",
+        recruitmentType: "Portal de Candidaturas Espontâneas",
+        notes: "Empresa do Grupo Sonangol dedicada a telecomunicações para o setor petrolífero.",
+        tags: ["Sonangol", "VSAT Petrolífero", "Petrangol"]
+      },
+      {
+        id: 7,
+        name: "TV Cabo Angola",
+        sector: "Telecomunicações",
+        sectorKey: "telecom",
+        category: "Multinacional Privada",
+        location: "Luanda / Talatona",
+        phone: "Não Disponível",
+        email: "recrutamento@tvcabo.co.ao",
+        recruitmentType: "Email Direto",
+        notes: "Distribuição de dados e conteúdos por fibra ótica.",
+        tags: ["Fibra Ótica", "Internet", "Talatona"]
+      },
+      {
+        id: 8,
+        name: "Multitel",
+        sector: "Telecomunicações",
+        sectorKey: "telecom",
+        category: "Estatal Comercial",
+        location: "Rua Alfredo Troni, Edifício BPC, 14º Andar, Luanda",
+        phone: "(+244) 222 704 200 / (+244) 222 391 369",
+        email: "comercial@multitel.co.ao / helpdesk@multitel.co.ao",
+        recruitmentType: "Email Direto",
+        notes: "Serviços de telecomunicações corporativas e links dedicados.",
+        tags: ["Empresarial", "BPC", "Luanda"]
+      },
+
+      // Petróleo & Gás
+      {
+        id: 9,
+        name: "BRIMONT",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Privada Nacional",
+        location: "Belas Business Park, Torre Cunene, 5º Andar, Salas 501/504, Talatona",
+        phone: "(+244) 923 167 260 / (+244) 942 588 934",
+        email: "info@brimont.co.ao",
+        recruitmentType: "Email Direto",
+        notes: "Fornecimento de produtos químicos, consultoria e apoio a operações petrolíferas.",
+        tags: ["Químicos", "Consultoria", "Belas Business Park"]
+      },
+      {
+        id: 10,
+        name: "Alfort Oil & Gas",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Privada Nacional",
+        location: "Belas Business Park, Edifício Bengo, 4º Andar, Sala 409, Talatona",
+        phone: "(+244) 942 439 048",
+        email: "geral@alfort.co.ao",
+        recruitmentType: "Email Direto",
+        notes: "Prestação de serviços operacionais e suprimentos petrolíferos.",
+        tags: ["Suprimentos", "Serviços", "Belas Business Park"]
+      },
+      {
+        id: 11,
+        name: "AAIRG Angola",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Joint Venture",
+        location: "Belas Business Park V, Torre Cuanza Sul, 6º Piso, Talatona",
+        phone: "(+244) 921 124 042",
+        email: "mario.lelo@aairg-angola.com",
+        recruitmentType: "Email Direto",
+        notes: "Serviços especializados de inspecção e integridade técnica.",
+        tags: ["Inspecção", "Integridade", "Belas Business Park"]
+      },
+      {
+        id: 12,
+        name: "Saipem Luxembourg (Angola)",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Multinacional Privada",
+        location: "Condomínio de Escritórios em Talatona, Luanda",
+        phone: "Não Disponível",
+        email: "Portal de Vagas Saipem",
+        recruitmentType: "Portal ATS / Site Global",
+        notes: "Engenharia submarina, perfuração e grandes construções offshore.",
+        tags: ["Offshore", "EPC", "Talatona"]
+      },
+      {
+        id: 13,
+        name: "Etu Energias (antiga Somoil)",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Privada Nacional",
+        location: "Polo Corporativo de Talatona / Luanda",
+        phone: "Não Disponível",
+        email: "recrutamento@etuenergias.co.ao",
+        recruitmentType: "Email Direto",
+        notes: "A maior operadora privada 100% angolana de exploração de hidrocarbonetos.",
+        tags: ["Operadora", "Exploração", "Talatona"]
+      },
+      {
+        id: 14,
+        name: "Sonangol, E.P.",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Estatal Comercial",
+        location: "Sede Luanda / Instalações Descentralizadas em Talatona",
+        phone: "(+244) 222 633 859",
+        email: "Portal de Candidaturas: sonangol.co.ao",
+        recruitmentType: "Portal de Candidaturas Espontâneas",
+        notes: "Concessionária e operadora estatal com recrutamento via portal próprio.",
+        tags: ["Concessionária", "Estatal", "Talatona"]
+      },
+      {
+        id: 15,
+        name: "Azule Energy",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Joint Venture",
+        location: "Torres Atlântico, Av. 4 de Fevereiro 197, Luanda",
+        phone: "(+244) 923 181 040",
+        email: "info@azule-energy.com / recruitment@azule-energy.com",
+        recruitmentType: "Email Direto",
+        notes: "Maior produtora independente de Petróleo e Gás em Angola (BP + Eni).",
+        tags: ["BP", "Eni", "Joint Venture"]
+      },
+      {
+        id: 16,
+        name: "TotalEnergies Angola",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Multinacional Privada",
+        location: "Escritórios Centrais Luanda (Raio 50 km)",
+        phone: "(+244) 935 508 659",
+        email: "Portal Global de Carreiras TotalEnergies",
+        recruitmentType: "Portal ATS / Site Global",
+        notes: "Uma das principais operadoras multinacionais em Angola.",
+        tags: ["Operadora", "Multinacional", "ATS"]
+      },
+      {
+        id: 17,
+        name: "Chevron (CABGOC)",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Multinacional Privada",
+        location: "Complexo Luanda / Talatona",
+        phone: "Não Disponível",
+        email: "concurso@chevron.com / Portal de Carreiras",
+        recruitmentType: "Portal ATS / Site Global",
+        notes: "Pioneira na exploração offshore em Angola.",
+        tags: ["CABGOC", "Offshore", "ATS"]
+      },
+      {
+        id: 18,
+        name: "Baker Hughes Angola",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Multinacional Privada",
+        location: "Base da SONILS, Luanda (Raio 50 km de Talatona)",
+        phone: "Não Disponível",
+        email: "careers.bakerhughes.com",
+        recruitmentType: "Portal ATS / Site Global",
+        notes: "Serviços tecnológicos para poços, perfuração e reservatórios.",
+        tags: ["SONILS", "Perfuração", "ATS"]
+      },
+      {
+        id: 19,
+        name: "Halliburton Overseas",
+        sector: "Petróleo & Gás",
+        sectorKey: "oilgas",
+        category: "Multinacional Privada",
+        location: "Operações Luanda / Base SONILS",
+        phone: "Não Disponível",
+        email: "careers.halliburton.com",
+        recruitmentType: "Portal ATS / Site Global",
+        notes: "Fornecedora global de serviços de cimentação, perfilagem e completação.",
+        tags: ["SONILS", "Serviços de Poço", "ATS"]
+      },
+
+      // Logística
+      {
+        id: 20,
+        name: "Africa Global Logistics (AGL)",
+        sector: "Logística",
+        sectorKey: "logistics",
+        category: "Multinacional Privada",
+        location: "Unidade de Gestão em Talatona / Operações Portuárias Luanda",
+        phone: "Não Disponível",
+        email: "Portal de Recrutamento AGL",
+        recruitmentType: "Portal ATS / Site Global",
+        notes: "Gestão logística multimodal e operacional portuária.",
+        tags: ["Multimodal", "Portos", "Talatona"]
+      },
+      {
+        id: 21,
+        name: "DP World Luanda",
+        sector: "Logística",
+        sectorKey: "logistics",
+        category: "Multinacional Privada",
+        location: "Terminal Multiuso, Porto de Luanda (Raio 50 km)",
+        phone: "(+244) 923 126 126 / (+244) 923 165 270",
+        email: "dpwluanda.geral@dpworld.com / commercial.luanda@dpworld.com",
+        recruitmentType: "Email Direto",
+        notes: "Concessionária do Terminal Multiuso do Porto de Luanda.",
+        tags: ["Terminal Marítimo", "Contentores", "Porto Luanda"]
+      },
+      {
+        id: 22,
+        name: "Bourbon Angola",
+        sector: "Logística",
+        sectorKey: "logistics",
+        category: "Multinacional Privada",
+        location: "Operações de Suporte Marítimo e Offshore, Luanda",
+        phone: "Não Disponível",
+        email: "Portal de Carreiras Bourbon",
+        recruitmentType: "Portal ATS / Site Global",
+        notes: "Líder em serviços marítimos para a indústria petrolífera offshore.",
+        tags: ["Offshore Supply", "Embarcações", "Luanda"]
+      },
+      {
+        id: 23,
+        name: "Transkamba",
+        sector: "Logística",
+        sectorKey: "logistics",
+        category: "Privada Nacional",
+        location: "Luanda / Serviços de Logística Operacional",
+        phone: "Não Disponível",
+        email: "Contacto via Consultorias Parceiras",
+        recruitmentType: "Intermediado por Consultoria",
+        notes: "Transporte rodoviário de cargas e logística de distribuição.",
+        tags: ["Transporte Rodoviário", "Cargas"]
+      },
+      {
+        id: 24,
+        name: "ProLog Soluções",
+        sector: "Logística",
+        sectorKey: "logistics",
+        category: "Privada Nacional",
+        location: "Luanda / Formação e Consultoria Logística",
+        phone: "Não Disponível",
+        email: "Contacto Operacional Direto",
+        recruitmentType: "Intermediado por Consultoria",
+        notes: "Consultoria em gestão da cadeia de suprimentos e formação de quadros.",
+        tags: ["Supply Chain", "Consultoria"]
+      },
+      {
+        id: 25,
+        name: "SOCINTER",
+        sector: "Logística",
+        sectorKey: "logistics",
+        category: "Privada Nacional",
+        location: "Luanda / Comércio Internacional e Logística",
+        phone: "Não Disponível",
+        email: "Recrutamento direto para operações",
+        recruitmentType: "Intermediado por Consultoria",
+        notes: "Desalfandegamento e trânsito internacional de mercadorias.",
+        tags: ["Despacho", "Comércio Externo"]
+      },
+
+      // Programação & TI
+      {
+        id: 26,
+        name: "Nox Angola",
+        sector: "Tecnologia / TI",
+        sectorKey: "software",
+        category: "Privada Nacional",
+        location: "Belas Business Park, Edifício Cunene, 8º Andar, Salas 808/811, Talatona",
+        phone: "(+244) 936 228 352",
+        email: "Candidaturas técnicas via site / e-mail corporativo",
+        recruitmentType: "Email Direto",
+        notes: "Desenvolvimento de software por medida, engenharia de dados e cibersegurança.",
+        tags: ["Software", "Cibersegurança", "Belas Business Park"]
+      },
+      {
+        id: 27,
+        name: "Sistec",
+        sector: "Tecnologia / TI",
+        sectorKey: "software",
+        category: "Privada Nacional",
+        location: "Via do Talatona, Condomínio Pitanga / Av. Comandante Che Guevara",
+        phone: "(+244) 225 800 000 / (+244) 936 263 403",
+        email: "carlos.quinas@sistec.co.ao / jorge.cengari@sistec.co.ao",
+        recruitmentType: "Email Direto",
+        notes: "Integradora histórica de sistemas, equipamentos e soluções tecnológicas.",
+        tags: ["Sistemas", "Hardware", "Via do Talatona"]
+      },
+      {
+        id: 28,
+        name: "NCR Angola",
+        sector: "Tecnologia / TI",
+        sectorKey: "software",
+        category: "Privada Nacional",
+        location: "Unidade Corporativa Talatona e Pontos de Venda Luanda",
+        phone: "(+244) 923 167 000",
+        email: "Canal de recrutamento técnico e comercial direto",
+        recruitmentType: "Email Direto",
+        notes: "Soluções tecnológicas empresariais, retalho e distribuição corporativa.",
+        tags: ["Tecnologia", "Retalho", "Talatona"]
+      },
+      {
+        id: 29,
+        name: "ITgest",
+        sector: "Tecnologia / TI",
+        sectorKey: "software",
+        category: "Privada Nacional",
+        location: "Rua Direita do Camama, Bairro Camama 1, Talatona",
+        phone: "Não Disponível",
+        email: "Portal de Candidatura Espontânea ITgest",
+        recruitmentType: "Portal de Candidaturas Espontâneas",
+        notes: "Implementação de ERP (SAP), transformação digital e consultoria de TI.",
+        tags: ["ERP SAP", "Camama", "Talatona"]
+      },
+      {
+        id: 30,
+        name: "Asseco PST",
+        sector: "Tecnologia / TI",
+        sectorKey: "software",
+        category: "Multinacional Privada",
+        location: "Escritórios Centrais Luanda (Atuação forte em Talatona)",
+        phone: "Não Disponível",
+        email: "Portal Corporativo de Carreiras Asseco",
+        recruitmentType: "Portal ATS / Site Global",
+        notes: "Desenvolvimento de software bancário e sistemas financeiros.",
+        tags: ["Banking Software", "Fintech"]
+      },
+      {
+        id: 31,
+        name: "Cegid (Primavera BSS)",
+        sector: "Tecnologia / TI",
+        sectorKey: "software",
+        category: "Multinacional Privada",
+        location: "Luanda / Talatona",
+        phone: "Não Disponível",
+        email: "Rede de parceiros e e-mail direto Cegid",
+        recruitmentType: "Email Direto",
+        notes: "Sistemas de gestão empresarial (ERP Primavera) e gestão fiscal angolana.",
+        tags: ["ERP Primavera", "Gestão Fiscal"]
+      }
+    ];
+
+    // Global Filter State
+    let currentSector = "all";
+    let filteredData = [...companiesData];
+
+    // Initialize Page
+    document.addEventListener("DOMContentLoaded", () => {
+      renderCards(companiesData);
+      initCharts();
+      highlightChain('oilgas');
+      switchGuideTab('ats');
+    });
+
+    // Smooth Scroll Utility
+    function scrollToSection(sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Set Active Sector Filter Pill
+    function setSectorFilter(sectorKey) {
+      currentSector = sectorKey;
+      document.querySelectorAll('.sector-pill').forEach(btn => {
+        btn.classList.remove('bg-amber-600', 'text-white');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
+      });
+
+      const activeBtn = document.getElementById(`pill-${sectorKey}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'text-slate-700');
+        activeBtn.classList.add('bg-amber-600', 'text-white');
+      }
+
+      applyFilters();
+    }
+
+    // Apply All Combined Filters
+    function applyFilters() {
+      const searchTerm = document.getElementById("search-input").value.toLowerCase().trim();
+      const selectedCategory = document.getElementById("category-filter").value;
+      const selectedRecruitment = document.getElementById("recruitment-filter").value;
+
+      filteredData = companiesData.filter(company => {
+        // Sector match
+        const matchesSector = (currentSector === "all") || (company.sectorKey === currentSector);
+
+        // Search term match
+        const matchesSearch = 
+          company.name.toLowerCase().includes(searchTerm) ||
+          company.location.toLowerCase().includes(searchTerm) ||
+          company.email.toLowerCase().includes(searchTerm) ||
+          company.tags.some(t => t.toLowerCase().includes(searchTerm));
+
+        // Category match
+        const matchesCategory = (selectedCategory === "all") || (company.category === selectedCategory);
+
+        // Recruitment match
+        const matchesRecruitment = (selectedRecruitment === "all") || (company.recruitmentType === selectedRecruitment);
+
+        return matchesSector && matchesSearch && matchesCategory && matchesRecruitment;
+      });
+
+      renderCards(filteredData);
+      document.getElementById("results-count").textContent = `A apresentar ${filteredData.length} empresas`;
+
+      const noResultsBox = document.getElementById("no-results");
+      if (filteredData.length === 0) {
+        noResultsBox.classList.remove("hidden");
+      } else {
+        noResultsBox.classList.add("hidden");
+      }
+    }
+
+    // Reset All Filters
+    function resetFilters() {
+      document.getElementById("search-input").value = "";
+      document.getElementById("category-filter").value = "all";
+      document.getElementById("recruitment-filter").value = "all";
+      setSectorFilter('all');
+    }
+
+    // Render Company Cards Grid with Contextualized Web Icons
+    function renderCards(data) {
+      const grid = document.getElementById("company-grid");
+      grid.innerHTML = "";
+
+      data.forEach(company => {
+        let sectorBadgeColor = "bg-amber-100 text-amber-800 border-amber-200";
+        let iconHtml = `<i class="fa-solid fa-building text-amber-600"></i>`;
+
+        if (company.sectorKey === "oilgas") {
+          sectorBadgeColor = "bg-amber-100 text-amber-800 border-amber-200";
+          iconHtml = `<i class="fa-solid fa-oil-well text-amber-600"></i>`;
+        } else if (company.sectorKey === "telecom") {
+          sectorBadgeColor = "bg-blue-100 text-blue-800 border-blue-200";
+          iconHtml = `<i class="fa-solid fa-tower-cell text-blue-600"></i>`;
+        } else if (company.sectorKey === "logistics") {
+          sectorBadgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200";
+          iconHtml = `<i class="fa-solid fa-truck-fast text-emerald-600"></i>`;
+        } else if (company.sectorKey === "software") {
+          sectorBadgeColor = "bg-indigo-100 text-indigo-800 border-indigo-200";
+          iconHtml = `<i class="fa-solid fa-laptop-code text-indigo-600"></i>`;
+        }
+
+        const card = document.createElement("div");
+        card.className = "glass-card p-5 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4 border border-slate-200";
+
+        card.innerHTML = `
+          <div class="space-y-3">
+            <div class="flex items-start justify-between gap-2">
+              <span class="text-xl w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-200">${iconHtml}</span>
+              <span class="text-[11px] font-bold px-2.5 py-1 rounded-full border ${sectorBadgeColor}">
+                ${company.sector}
+              </span>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-slate-900 text-lg leading-tight hover:text-amber-600 transition cursor-pointer" onclick="openModal(${company.id})">
+                ${company.name}
+              </h3>
+              <p class="text-xs font-semibold text-slate-500 mt-0.5">${company.category}</p>
+            </div>
+
+            <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+              ${company.notes}
+            </p>
+
+            <div class="text-xs text-slate-500 space-y-1 pt-1">
+              <div class="flex items-center gap-2 truncate">
+                <i class="fa-solid fa-location-dot text-slate-400 w-4 text-center"></i>
+                <span class="truncate">${company.location}</span>
+              </div>
+              <div class="flex items-center gap-2 truncate">
+                <i class="fa-solid fa-envelope text-slate-400 w-4 text-center"></i>
+                <span class="truncate font-mono text-[11px] text-amber-700">${company.email}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 flex items-center gap-1">
+              <i class="fa-solid fa-id-badge text-[10px] text-slate-400"></i> ${company.recruitmentType}
+            </span>
+            <button onclick="openModal(${company.id})" class="text-xs font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1">
+              Ver Detalhes <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    // Modal Details Renderer with Contextual Icons
+    function openModal(companyId) {
+      const company = companiesData.find(c => c.id === companyId);
+      if (!company) return;
+
+      const modalBody = document.getElementById("modal-body");
+      modalBody.innerHTML = `
+        <div class="space-y-5">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">
+                ${company.sector}
+              </span>
+              <span class="text-xs text-slate-500 font-medium">${company.category}</span>
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-900">${company.name}</h2>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 text-xs">
+            <div>
+              <span class="block font-bold text-slate-500 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                <i class="fa-solid fa-location-dot text-amber-600"></i> Endereço / Localização Exata:
+              </span>
+              <p class="text-slate-800 font-medium mt-0.5">${company.location}</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200">
+              <div>
+                <span class="block font-bold text-slate-500 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                  <i class="fa-solid fa-phone text-amber-600"></i> Telefone Comercial:
+                </span>
+                <p class="text-slate-800 font-mono mt-0.5">${company.phone}</p>
+                ${company.phone !== "Não Disponível" ? `<button onclick="copyToClipboard('${company.phone}')" class="mt-1 text-[11px] text-amber-600 font-semibold hover:underline inline-flex items-center gap-1"><i class="fa-regular fa-copy"></i> Copiar Telefone</button>` : ''}
+              </div>
+
+              <div>
+                <span class="block font-bold text-slate-500 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                  <i class="fa-solid fa-envelope text-amber-600"></i> Canal de Candidatura / E-mail:
+                </span>
+                <p class="text-amber-700 font-mono font-medium mt-0.5 break-all">${company.email}</p>
+                <button onclick="copyToClipboard('${company.email}')" class="mt-1 text-[11px] text-amber-600 font-semibold hover:underline inline-flex items-center gap-1"><i class="fa-regular fa-copy"></i> Copiar E-mail / Link</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-info text-amber-600"></i> Descrição & Atuação Estratégica
+            </h4>
+            <p class="text-xs text-slate-600 leading-relaxed">${company.notes}</p>
+          </div>
+
+          <div class="space-y-2">
+            <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-file-contract text-amber-600"></i> Método de Recrutamento Directo
+            </h4>
+            <div class="p-3 bg-amber-50 rounded-lg border border-amber-200 text-xs text-amber-900">
+              <strong>${company.recruitmentType}:</strong> Esta empresa opera sob a Lei Geral do Trabalho privada angolana, aceitando candidaturas sem necessidade de concurso público estatal.
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 pt-2">
+            ${company.tags.map(tag => `<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-mono">#${tag}</span>`).join('')}
+          </div>
+        </div>
+      `;
+
+      document.getElementById("company-modal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("company-modal").classList.add("hidden");
+    }
+
+    // Copy to Clipboard Toast Handler
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById("toast");
+        document.getElementById("toast-message").textContent = `Copiado: "${text.substring(0, 30)}..."`;
+        toast.classList.remove("hidden");
+        setTimeout(() => {
+          toast.classList.add("hidden");
+        }, 3000);
+      });
+    }
+
+    // Chart.js Initialization
+    function initCharts() {
+      // Sector Breakdown Chart
+      const sectorCtx = document.getElementById('sectorChart').getContext('2d');
+      new Chart(sectorCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Petróleo & Gás', 'Telecomunicações', 'Tecnologia / TI', 'Logística'],
+          datasets: [{
+            data: [11, 8, 6, 6],
+            backgroundColor: ['#D97706', '#2563EB', '#6366F1', '#059669'],
+            borderWidth: 2,
+            borderColor: '#FFFFFF'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { font: { family: 'Plus Jakarta Sans', size: 11 } }
+            }
+          }
+        }
+      });
+
+      // Recruitment Method Chart
+      const recruitmentCtx = document.getElementById('recruitmentChart').getContext('2d');
+      new Chart(recruitmentCtx, {
+        type: 'bar',
+        data: {
+          labels: ['E-mail Direto', 'Portal ATS / Global', 'Candidatura Espontânea', 'Consultoria RH'],
+          datasets: [{
+            label: 'Nº de Empresas',
+            data: [14, 8, 5, 4],
+            backgroundColor: '#D97706',
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true, grid: { display: false } },
+            x: { grid: { display: false } }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    // Value Chain Interactive Highlighting
+    const chainExplanations = {
+      oilgas: {
+        title: "Petróleo & Gás: O Tracionador Principal do Ecossistema",
+        desc: "Empresas como TotalEnergies, Chevron, Azule Energy e Sonangol geram a maior procura por serviços em Talatona. Elas contratam links dedicados de telecomunicações para conectividade com as plataformas offshore, softwares customizados para gestão de reservas e logística de suporte a partir da base da SONILS.",
+        impact: "Exige certificações internacionais rigorosas (HST/ISO) e atrai grandes investimentos para a área de Talatona.",
+        icon: "fa-oil-well text-amber-600"
+      },
+      telecom: {
+        title: "Telecomunicações: A Espinha Dorsal da Operacionalidade",
+        desc: "Provedores como WiTelekom, Unitel, Paratus e MSTelcom garantem links redundantes de fibra ótica, links satelitais VSAT e redes privadas entre os escritórios do Belas Business Park e as bases operacionais remotas no Cacuaco e offshore.",
+        impact: "Permite a centralização dos comandos executivos e decisórios no centro de escritórios de Talatona.",
+        icon: "fa-tower-cell text-blue-600"
+      },
+      software: {
+        title: "Tecnologia & Software: Governança e Eficiência Digital",
+        desc: "Especialistas como ITgest, Asseco, Nox e Sistec fornecem módulos ERP (SAP/Primavera), cibersegurança e automação contábil para conformidade fiscal em Angola, atendendo diretamente às demandas das petrolíferas e operadoras de logística.",
+        impact: "Alta procura por quadros qualificados em engenharia de dados, programação e segurança da informação.",
+        icon: "fa-laptop-code text-indigo-600"
+      },
+      logistics: {
+        title: "Logística & Suporte: A Ligação Física dos Mercados",
+        desc: "Concessionárias portuárias como a DP World e operadores multimodais como AGL e Bourbon movimentam materiais pesados, reagentes químicos e tubagens do Porto de Luanda para as bases de apoio, articulando-se com a gestão em Talatona.",
+        impact: "Garante a continuidade dos suprimentos sem interrupção para o setor extrativo de hidrocarbonetos.",
+        icon: "fa-truck-fast text-emerald-600"
+      }
+    };
+
+    function highlightChain(sectorKey) {
+      document.querySelectorAll('.chain-btn').forEach(btn => {
+        btn.classList.remove('bg-amber-50', 'border-amber-500');
+        btn.classList.add('border-slate-200');
+      });
+
+      const activeBtn = document.getElementById(`chain-btn-${sectorKey}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-amber-50', 'border-amber-500');
+        activeBtn.classList.remove('border-slate-200');
+      }
+
+      const info = chainExplanations[sectorKey];
+      const box = document.getElementById("chain-details-box");
+      box.innerHTML = `
+        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+          <i class="fa-solid ${info.icon}"></i> ${info.title}
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${info.desc}</p>
+        <div class="p-3 bg-white rounded-lg border border-slate-200 text-xs font-medium text-amber-800 flex items-center gap-2">
+          <i class="fa-solid fa-lightbulb text-amber-600 text-sm"></i>
+          <span><strong>Impacto Estratégico:</strong> ${info.impact}</span>
+        </div>
+      `;
+    }
+
+    // Recruitment Guide Tabs Logic
+    const guideTabsContent = {
+      ats: `
+        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+          <i class="fa-solid fa-robot text-amber-600"></i> Sistemas ATS (Applicant Tracking Systems) em Multinacionais
+        </h3>
+        <p>Grandes multinacionais petrolíferas e logísticas operantes em Talatona (ex: Baker Hughes, Halliburton, TotalEnergies, Saipem) utilizam sistemas automatizados de triagem de currículos.</p>
+        <ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-slate-600">
+          <li><strong>Formato PDF Limpo:</strong> Evite modelos complexos com imagens ou gráficos para garantir que os algoritmos leiam o texto corretamente.</li>
+          <li><strong>Palavras-Chave da Indústria:</strong> Inclua termos técnicos específicos do setor petrolífero ou tecnológico (ex: HSE, Subsea, VSAT, ERP SAP).</li>
+          <li><strong>Submissão Direta:</strong> Utilize exclusivamente o portal global corporativo da empresa, evitando o envio de documentos impressos nas instalações de Talatona.</li>
+        </ul>
+      `,
+      spontaneous: `
+        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+          <i class="fa-solid fa-paper-plane text-amber-600"></i> Portais de Candidatura Espontânea Contínua
+        </h3>
+        <p>Empresas nacionais e estatais comerciais como a Sonangol, Unitel e ITgest mantêm portais proprietários de receção contínua de talentos.</p>
+        <ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-slate-600">
+          <li><strong>Perfil Atualizado:</strong> Mantenha o registo no portal sempre atualizado com as últimas certificações.</li>
+          <li><strong>Acompanhamento Periódico:</strong> As bases de dados são consultadas preventivamente antes da abertura de concursos externos.</li>
+          <li><strong>Indicação da Área Pretendida:</strong> Associe a sua candidatura à área específica de atuação para facilitar o filtro dos recrutadores.</li>
+        </ul>
+      `,
+      consultancies: `
+        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+          <i class="fa-solid fa-user-group text-amber-600"></i> Intermediação por Consultorias de RH em Talatona
+        </h3>
+        <p>Uma grande parcela do recrutamento para cargos especializados e de liderança em empresas privadas é terceirizada para consultoras especializadas situadas no próprio polo de Talatona.</p>
+        <ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-slate-600">
+          <li><strong>Consultoras Chave:</strong> Ascending, Integer Consultoria e HRD.</li>
+          <li><strong>Presença Profissional:</strong> Mantenha o seu perfil ativo em redes profissionais (como LinkedIn) indicando disponibilidade geográfica para Luanda/Talatona.</li>
+          <li><strong>Direct Recruitment:</strong> O contacto por recrutadores (headhunting) é a principal via para vagas seniores não anunciadas publicamente.</li>
+        </ul>
+      `,
+      localcontent: `
+        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+          <i class="fa-solid fa-scale-balanced text-amber-600"></i> Conformidade com a Legislação de Conteúdo Local
+        </h3>
+        <p>A contratação no setor petrolífero e indústrias conexas rege-se pelo Decreto Presidencial nº 271/20 e pelas normas de Conteúdo Local angolanas.</p>
+        <ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-slate-600">
+          <li><strong>Valorização do Quadro Nacional:</strong> Prioridade na integração de técnicos e especialistas angolanos qualificados.</li>
+          <li><strong>Certificações Internacionais:</strong> Investimento individual em qualificações reconhecidas fortalece o perfil do candidato perante as multinacionais de Talatona.</li>
+          <li><strong>Fornecedores Locais:</strong> Incentivo à subcontratação de empresas angolanas com sede em polos como o Belas Business Park.</li>
+        </ul>
+      `
+    };
+
+    function switchGuideTab(tabKey) {
+      document.querySelectorAll('.guide-tab').forEach(btn => {
+        btn.classList.remove('tab-active');
+      });
+
+      const activeBtn = document.getElementById(`tab-${tabKey}`);
+      if (activeBtn) {
+        activeBtn.classList.add('tab-active');
+      }
+
+      document.getElementById('guide-content-area').innerHTML = guideTabsContent[tabKey];
+    }
+  </script>
+</body>
+</html>

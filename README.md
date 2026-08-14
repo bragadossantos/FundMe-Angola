@@ -1,6 +1,4 @@
-Vou gerar o ficheiro `README.md` completo e estruturado para o seu repositório no GitHub, juntamente com sugestões de descrição curta para a secção **"About"** do projeto.
 
-markdown:GitHub README:README.md
 
 # 🏢 Portal Corporativo de Talatona & Grande Luanda
 

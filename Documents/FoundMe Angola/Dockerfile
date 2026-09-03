@@ -28,9 +28,10 @@ COPY . /var/www/html
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Install PHP dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+# Install PHP dependencies without running scripts (prevents package:discover failure during build)
+RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
 
 # Set permissions for storage and bootstrap/cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
@@ -38,5 +39,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 EXPOSE 80
 
-# Entrypoint script to run migrations and start Apache
-CMD sh -c "php artisan config:clear && php artisan migrate --force && apache2-foreground"
+# Entrypoint script to run package discovery, clear config cache, migrate database, and start Apache
+CMD sh -c "php artisan package:discover --ansi && php artisan config:clear && php artisan migrate --force && apache2-foreground"

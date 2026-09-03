@@ -1,0 +1,299 @@
+/* FundMe Angola — Custom CSS Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+
+:root {
+    --primary-color: #0b4629;
+    --primary-light: #10b981;
+    --primary-dark: #062b19;
+    --secondary-color: #0f172a;
+    --accent-gold: #f59e0b;
+    --accent-gold-hover: #d97706;
+    --bg-light: #f8fafc;
+    --card-bg: #ffffff;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    --shadow-hover: 0 20px 30px -10px rgba(11, 70, 41, 0.15);
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--secondary-color);
+}
+
+/* Navbar */
+.navbar-fundme {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    padding: 0.8rem 1rem;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.brand-logo .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.brand-logo span.highlight {
+    color: var(--accent-gold);
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #072a19 0%, #0b4629 50%, #061c11 100%);
+    color: white;
+    padding: 5rem 0 6rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(0,0,0,0) 70%);
+    border-radius: 50%;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: #cbd5e1;
+    margin-bottom: 2rem;
+    max-width: 650px;
+}
+
+/* Cards */
+.card-campaign {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background-color: var(--card-bg);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-soft);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-campaign:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.card-campaign-img {
+    height: 210px;
+    width: 100%;
+    object-fit: cover;
+    background-color: #e2e8f0;
+    position: relative;
+}
+
+.badge-verification {
+    background-color: rgba(11, 70, 41, 0.9);
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Progress Bar */
+.progress-fundme {
+    height: 10px;
+    border-radius: 10px;
+    background-color: #e2e8f0;
+    overflow: hidden;
+    margin: 1rem 0 0.5rem;
+}
+
+.progress-bar-fundme {
+    background: linear-gradient(90deg, var(--primary-light), var(--primary-color));
+    border-radius: 10px;
+    transition: width 0.8s ease-in-out;
+}
+
+/* Buttons */
+.btn-primary-fundme {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.75rem;
+    border-radius: var(--radius-md);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-fundme:hover {
+    background-color: var(--primary-dark);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(11, 70, 41, 0.25);
+}
+
+.btn-gold-fundme {
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-hover));
+    color: #ffffff;
+    font-weight: 700;
+    padding: 0.75rem 1.75rem;
+    border-radius: var(--radius-md);
+    border: none;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    transition: all 0.2s ease;
+}
+
+.btn-gold-fundme:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(245, 158, 11, 0.4);
+}
+
+/* Stat Box */
+.stat-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+}
+
+.stat-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    font-family: var(--font-heading);
+    color: var(--primary-color);
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Timeline */
+.timeline-list {
+    position: relative;
+    padding-left: 2rem;
+    border-left: 2px solid var(--border-color);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.4rem;
+    top: 0.2rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: var(--primary-light);
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* Admin Sidebar */
+.admin-sidebar {
+    background-color: var(--secondary-color);
+    color: #94a3b8;
+    min-height: calc(100vh - 70px);
+}
+
+.admin-sidebar .nav-link {
+    color: #cbd5e1;
+    padding: 0.8rem 1.2rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.2rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-sidebar .nav-link:hover, .admin-sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.admin-sidebar .nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Footer */
+.footer-fundme {
+    background-color: var(--secondary-color);
+    color: #94a3b8;
+    padding: 4rem 0 2rem;
+    margin-top: 5rem;
+}
+
+.footer-title {
+    color: white;
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
+}
+
+.footer-links a {
+    color: #94a3b8;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.6rem;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--primary-light);
+}

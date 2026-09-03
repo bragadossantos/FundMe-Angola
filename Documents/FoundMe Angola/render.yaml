@@ -3,7 +3,7 @@ services:
     name: fundme-angola
     runtime: docker
     plan: free
-    dockerfilePath: Dockerfile
+    dockerfilePath: Documents/FoundMe Angola/Dockerfile
     envVars:
       - key: APP_ENV
         value: production

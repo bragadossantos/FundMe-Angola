@@ -2,13 +2,13 @@ services:
   - type: web
     name: fundme-angola
     runtime: docker
-    plan: starter
+    plan: free
     dockerfilePath: Dockerfile
     envVars:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: false
+        value: "false"
       - key: APP_URL
         sync: false
       - key: APP_KEY
@@ -40,4 +40,4 @@ databases:
   - name: fundme-db
     databaseName: fundme_angola
     user: fundme_user
-    plan: starter
+    plan: free

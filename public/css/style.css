@@ -275,25 +275,35 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 /* Footer */
 .footer-fundme {
     background-color: var(--secondary-color);
-    color: #94a3b8;
+    color: #ffffff !important;
     padding: 4rem 0 2rem;
     margin-top: 5rem;
 }
 
+.footer-fundme p,
+.footer-fundme span,
+.footer-fundme div {
+    color: #ffffff !important;
+}
+
 .footer-title {
-    color: white;
+    color: #ffffff !important;
     font-size: 1.1rem;
     margin-bottom: 1.2rem;
+    font-weight: 700;
 }
 
 .footer-links a {
-    color: #94a3b8;
+    color: #ffffff !important;
     text-decoration: none;
     display: block;
     margin-bottom: 0.6rem;
-    transition: color 0.2s;
+    transition: all 0.2s ease;
+    opacity: 0.9;
 }
 
 .footer-links a:hover {
-    color: var(--primary-light);
+    color: #10b981 !important;
+    opacity: 1;
+    transform: translateX(4px);
 }

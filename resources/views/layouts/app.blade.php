@@ -6,6 +6,9 @@
     <title>@yield('title', 'FundMe Angola — Crowdfunding Solidário para Causas Médicas')</title>
     <meta name="description" content="@yield('meta_description', 'Plataforma profissional angolana de crowdfunding solidário para tratamentos médicos, cirurgias e exames com verificação rigorosa e transparência total.')">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->

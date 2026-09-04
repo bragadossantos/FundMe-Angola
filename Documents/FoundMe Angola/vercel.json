@@ -6,14 +6,14 @@
       "runtime": "vercel-php@0.7.1"
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(css|js|images|storage|favicon.ico)(.*)",
-      "dest": "/public/$1$2"
+      "source": "/(css|js|images|storage|favicon.ico)(.*)",
+      "destination": "/public/$1$2"
     },
     {
-      "src": "/(.*)",
-      "dest": "/api/index.php"
+      "source": "/(.*)",
+      "destination": "/api/index.php"
     }
   ],
   "env": {

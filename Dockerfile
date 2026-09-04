@@ -1,16 +1,17 @@
 FROM php:8.2-apache
 
-# Install system dependencies and PHP extensions for Laravel
+# Install system dependencies and PHP extensions for Laravel (supports both MySQL and PostgreSQL)
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libpq-dev \
     zip \
     unzip \
     git \
     curl \
     libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
@@ -30,7 +31,7 @@ COPY . /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Install PHP dependencies without running scripts (prevents package:discover failure during build)
+# Install PHP dependencies without running scripts
 RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
 
 # Set permissions for storage and bootstrap/cache

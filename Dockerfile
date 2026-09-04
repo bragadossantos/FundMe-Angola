@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Install system dependencies and PHP extensions for Laravel (supports both MySQL and PostgreSQL)
+# Install system dependencies and PHP extensions for Laravel
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -31,8 +31,8 @@ COPY . /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Install PHP dependencies without running scripts
-RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
+# Clean vendor if any and install clean Linux Composer packages
+RUN rm -rf vendor composer.lock && composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
 
 # Set permissions for storage and bootstrap/cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
@@ -40,5 +40,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 EXPOSE 80
 
-# Entrypoint script: key generation, package discovery, config cache, database migration, and start Apache
+# Entrypoint script
 CMD sh -c "php artisan key:generate --force && php artisan package:discover --ansi && php artisan config:clear && php artisan migrate --force && apache2-foreground"

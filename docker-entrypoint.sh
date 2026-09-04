@@ -2,6 +2,9 @@
 
 echo "=== Starting FundMe Angola Container ==="
 
+# Force APP_DEBUG=true so any internal error trace is visible
+export APP_DEBUG=true
+
 # Create all required storage and cache directories
 mkdir -p /var/www/html/storage/app/public \
          /var/www/html/storage/app/private \
@@ -11,13 +14,10 @@ mkdir -p /var/www/html/storage/app/public \
          /var/www/html/storage/logs \
          /var/www/html/bootstrap/cache
 
-# Ensure .env file exists in container for Artisan commands
-if [ ! -f /var/www/html/.env ]; then
-    echo "Creating .env from .env.example..."
-    cp /var/www/html/.env.example /var/www/html/.env
-fi
+# Always ensure a fresh .env file exists in container from .env.example
+cp -f /var/www/html/.env.example /var/www/html/.env
 
-# Set strict permissions for Apache www-data user
+# Set permissions 777 for storage and bootstrap/cache to avoid permission errors
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/.env || true
 chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/.env || true
 

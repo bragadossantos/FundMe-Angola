@@ -2,24 +2,29 @@
 
 echo "=== Starting FundMe Angola Container ==="
 
-# Force APP_DEBUG=true so any internal error trace is visible
+# Force APP_DEBUG=true and LOG_CHANNEL=stderr
 export APP_DEBUG=true
+export LOG_CHANNEL=stderr
 
-# Create all required storage and cache directories
+# Create all required storage, logs, and database directories
 mkdir -p /var/www/html/storage/app/public \
          /var/www/html/storage/app/private \
          /var/www/html/storage/framework/cache/data \
          /var/www/html/storage/framework/sessions \
          /var/www/html/storage/framework/views \
          /var/www/html/storage/logs \
-         /var/www/html/bootstrap/cache
+         /var/www/html/bootstrap/cache \
+         /var/www/html/database
+
+touch /var/www/html/storage/logs/laravel.log
+touch /var/www/html/database/database.sqlite
 
 # Always ensure a fresh .env file exists in container from .env.example
 cp -f /var/www/html/.env.example /var/www/html/.env
 
-# Set permissions 777 for storage and bootstrap/cache to avoid permission errors
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/.env || true
-chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/.env || true
+# Grant full www-data ownership and 777 permissions to database, storage, and logs
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database /var/www/html/.env /var/www/html/storage/logs/laravel.log || true
+chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database /var/www/html/.env /var/www/html/storage/logs/laravel.log || true
 
 # Clear stale caches
 echo "Clearing application cache..."

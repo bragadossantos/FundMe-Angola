@@ -31,8 +31,8 @@ COPY . /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Clean vendor if any and install clean Linux Composer packages
-RUN rm -rf vendor composer.lock && composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
+# Install PHP packages from composer.lock
+RUN rm -rf vendor && composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
 
 # Set permissions for storage and bootstrap/cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \

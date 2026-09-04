@@ -40,5 +40,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 EXPOSE 80
 
-# Entrypoint script to run package discovery, clear config cache, migrate database, and start Apache
-CMD sh -c "php artisan package:discover --ansi && php artisan config:clear && php artisan migrate --force && apache2-foreground"
+# Entrypoint script: key generation, package discovery, config cache, database migration, and start Apache
+CMD sh -c "php artisan key:generate --force && php artisan package:discover --ansi && php artisan config:clear && php artisan migrate --force && apache2-foreground"

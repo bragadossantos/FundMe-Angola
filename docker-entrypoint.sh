@@ -12,8 +12,14 @@ mkdir -p /var/www/html/storage/app/public \
          /var/www/html/storage/logs \
          /var/www/html/bootstrap/cache
 
+# Ensure .env file exists in container for Artisan commands
+if [ ! -f /var/www/html/.env ]; then
+    echo "Creating .env from .env.example..."
+    cp /var/www/html/.env.example /var/www/html/.env
+fi
+
 # Set strict permissions for Apache www-data user
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/.env
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Clear stale caches
@@ -26,7 +32,7 @@ php artisan route:clear || true
 # Check and force generate valid base64 APP_KEY if missing or invalid
 if [[ "$APP_KEY" != base64:* ]]; then
     echo "Generating valid Laravel APP_KEY..."
-    php artisan key:generate --force
+    php artisan key:generate --force || true
 fi
 
 # Run package discovery

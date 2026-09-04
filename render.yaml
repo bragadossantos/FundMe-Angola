@@ -8,9 +8,11 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: "true"
+        value: "false"
       - key: APP_URL
         sync: false
+      - key: APP_KEY
+        value: base64:dWR3dmV5cTFmOTRsd3E0Zzh4d3lhbmh6MWsybWRma2c=
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST

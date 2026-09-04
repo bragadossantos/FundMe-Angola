@@ -1,0 +1,29 @@
+=====================================================
+    FundMe Angola — Contas de Acesso e Demonstração
+=====================================================
+
+1. ADMINISTRADOR DA PLATAFORMA (Painel Admin & Auditoria)
+   - Email: admin@fundmeangola.ao
+   - Palavra-passe: password
+   - Permissões: Gestão total de campanhas, utilizadores, relatórios, denúncias e transferências.
+
+2. VERIFICADORA MÉDICA / AUDITORA
+   - Email: verificador@fundmeangola.ao
+   - Palavra-passe: password
+   - Permissões: Triagem de documentos médicos privados e laudos hospitalares.
+
+3. SOLICITANTE DE APOIO MÉDICO (Criador de Campanha)
+   - Email: solicitante@fundmeangola.ao
+   - Palavra-passe: password
+   - Permissões: Submeter pedidos de angariação para cirurgias e tratamentos.
+
+4. DOADOR SOLIDÁRIO (Utilizador Comum)
+   - Email: doador@fundmeangola.ao
+   - Palavra-passe: password
+   - Permissões: Fazer doações, acompanhar causas e receber relatórios de transparência.
+
+=====================================================
+Nota: Para carregar estas contas na base de dados (caso esteja vazia),
+execute o comando no Render Shell ou terminal:
+php artisan db:seed --force
+=====================================================

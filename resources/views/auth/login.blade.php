@@ -63,17 +63,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Credentials Quick Reference for Demo/Testing -->
-            <div class="card border-0 shadow-sm rounded-4 mt-4 bg-white p-3">
-                <h6 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle text-primary me-1"></i> Contas de Demonstração Rápidas:</h6>
-                <div class="small text-muted">
-                    <p class="mb-1">👑 <strong>Administrador:</strong> <code>admin@fundmeangola.ao</code> / <code>password</code></p>
-                    <p class="mb-1">🛡️ <strong>Verificadora:</strong> <code>verificador@fundmeangola.ao</code> / <code>password</code></p>
-                    <p class="mb-1">📋 <strong>Solicitante:</strong> <code>solicitante@fundmeangola.ao</code> / <code>password</code></p>
-                    <p class="mb-0">❤️ <strong>Doador:</strong> <code>doador@fundmeangola.ao</code> / <code>password</code></p>
-                </div>
-            </div>
         </div>
     </div>
 </div>

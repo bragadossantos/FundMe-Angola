@@ -3,6 +3,8 @@
 vendor
 node_modules
 .env
+.env.*
+bootstrap/cache/*.php
 storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*

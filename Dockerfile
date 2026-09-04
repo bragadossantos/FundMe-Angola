@@ -1,7 +1,9 @@
 FROM php:8.2-apache
 
-# Install system dependencies and PHP extensions for Laravel
+# Install system dependencies and PHP extensions for Laravel (MySQL + PostgreSQL + GD + Zip + Mbstring)
 RUN apt-get update && apt-get install -y \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
@@ -11,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     libzip-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip
 
 # Enable Apache mod_rewrite
@@ -31,8 +34,11 @@ COPY . /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Install PHP packages from composer.lock
-RUN rm -rf vendor && composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
+# Install PHP packages cleanly
+RUN composer install --no-interaction --optimize-autoloader --no-scripts
+
+# Set permissions for entrypoint script
+RUN chmod +x /var/www/html/docker-entrypoint.sh
 
 # Set permissions for storage and bootstrap/cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
@@ -40,5 +46,4 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 EXPOSE 80
 
-# Entrypoint script
-CMD sh -c "php artisan key:generate --force && php artisan package:discover --ansi && php artisan config:clear && php artisan migrate --force && apache2-foreground"
+ENTRYPOINT ["/var/www/html/docker-entrypoint.sh"]

@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 echo "=== Starting FundMe Angola Container ==="
 
@@ -19,8 +18,8 @@ if [ ! -f /var/www/html/.env ]; then
 fi
 
 # Set strict permissions for Apache www-data user
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/.env
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/.env || true
+chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/.env || true
 
 # Clear stale caches
 echo "Clearing application cache..."

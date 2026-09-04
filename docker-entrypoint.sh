@@ -23,9 +23,9 @@ php artisan cache:clear || true
 php artisan view:clear || true
 php artisan route:clear || true
 
-# Generate APP_KEY if missing or empty
-if [ -z "$APP_KEY" ]; then
-    echo "Generating Laravel APP_KEY..."
+# Check and force generate valid base64 APP_KEY if missing or invalid
+if [[ "$APP_KEY" != base64:* ]]; then
+    echo "Generating valid Laravel APP_KEY..."
     php artisan key:generate --force
 fi
 

@@ -156,10 +156,10 @@
 </section>
 
 <!-- Call to Action Banner -->
-<section class="py-5 bg-primary-dark text-white position-relative overflow-hidden">
+<section class="py-5 bg-light text-dark position-relative overflow-hidden border-top">
     <div class="container py-4 text-center position-relative z-1">
-        <h2 class="text-white font-heading display-6 fw-bold mb-3">Conhece Alguém que Precisa de Ajuda Médica Urgente?</h2>
-        <p class="text-light lead mx-auto mb-4" style="max-width: 700px;">
+        <h2 class="text-dark font-heading display-6 fw-bold mb-3">Conhece Alguém que Precisa de Ajuda Médica Urgente?</h2>
+        <p class="text-dark lead mx-auto mb-4 opacity-75" style="max-width: 700px;">
             A nossa missão é garantir que nenhuma vida seja perdida por falta de recursos financeiros para tratamentos essenciais em Angola.
         </p>
         <a href="{{ route('campaigns.create') }}" class="btn btn-gold-fundme btn-lg px-5 py-3 shadow">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Campaign;
 use App\Models\Beneficiary;
@@ -56,7 +57,10 @@ class CampaignController extends Controller
         // Sorting
         switch ($request->sort) {
             case 'urgent':
-                $query->orderBy('created_at', 'asc');
+                // Most urgent = soonest expected treatment date first, since
+                // that's the actual deadline pressure — not simply the oldest
+                // campaign (age alone says nothing about urgency).
+                $query->orderByRaw('expected_treatment_date IS NULL, expected_treatment_date ASC');
                 break;
             case 'most_raised':
                 $query->orderBy('raised_amount', 'desc');
@@ -156,116 +160,121 @@ class CampaignController extends Controller
             'identity_document' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:10240',
         ]);
 
-        // 1. Create Beneficiary
-        $beneficiary = Beneficiary::create([
-            'user_id' => $user->id,
-            'full_name' => $validated['beneficiary_name'],
-            'age_range' => $validated['age_range'],
-            'relation_to_applicant' => $validated['relation_to_applicant'],
-            'location_province' => $validated['location_province'],
-            'location_municipality' => $validated['location_municipality'] ?? null,
-            'is_identity_hidden' => $request->has('is_identity_hidden'),
-        ]);
+        // All related rows (beneficiary, campaign, fund plan items, documents)
+        // must be created atomically — a failure partway through (e.g. a file
+        // upload error) must not leave an orphaned Campaign/Beneficiary behind.
+        DB::transaction(function () use ($request, $validated, $user) {
+            // 1. Create Beneficiary
+            $beneficiary = Beneficiary::create([
+                'user_id' => $user->id,
+                'full_name' => $validated['beneficiary_name'],
+                'age_range' => $validated['age_range'],
+                'relation_to_applicant' => $validated['relation_to_applicant'],
+                'location_province' => $validated['location_province'],
+                'location_municipality' => $validated['location_municipality'] ?? null,
+                'is_identity_hidden' => $request->has('is_identity_hidden'),
+            ]);
 
-        // 2. Slug generation
-        $slugBase = Str::slug($validated['title']);
-        $slug = $slugBase;
-        $counter = 1;
-        while (Campaign::where('slug', $slug)->exists()) {
-            $slug = $slugBase . '-' . $counter++;
-        }
+            // 2. Slug generation
+            $slugBase = Str::slug($validated['title']);
+            $slug = $slugBase;
+            $counter = 1;
+            while (Campaign::where('slug', $slug)->exists()) {
+                $slug = $slugBase . '-' . $counter++;
+            }
 
-        // 3. Featured Image Upload (Public image authorized for campaign)
-        $featuredImagePath = null;
-        if ($request->hasFile('featured_image')) {
-            $file = $request->file('featured_image');
-            $fileName = 'featured_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $featuredImagePath = $file->storeAs('campaigns/featured', $fileName, 'public');
-        }
+            // 3. Featured Image Upload (Public image authorized for campaign)
+            $featuredImagePath = null;
+            if ($request->hasFile('featured_image')) {
+                $file = $request->file('featured_image');
+                $fileName = 'featured_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $featuredImagePath = $file->storeAs('campaigns/featured', $fileName, 'public');
+            }
 
-        // 4. Create Campaign
-        $campaign = Campaign::create([
-            'user_id' => $user->id,
-            'beneficiary_id' => $beneficiary->id,
-            'hospital_id' => $validated['hospital_id'] ?? null,
-            'title' => $validated['title'],
-            'slug' => $slug,
-            'short_description' => $validated['short_description'],
-            'story' => $validated['story'],
-            'category' => $validated['category'],
-            'target_amount' => $validated['target_amount'],
-            'raised_amount' => 0.00,
-            'currency' => 'Kz',
-            'status' => 'pending_review', // Starts in PENDING_REVIEW as per specs
-            'location_province' => $validated['location_province'],
-            'location_municipality' => $validated['location_municipality'] ?? null,
-            'hospital_name' => $validated['hospital_name'] ?? null,
-            'treatment_location' => $validated['treatment_location'],
-            'expected_treatment_date' => $validated['expected_treatment_date'] ?? null,
-            'featured_image' => $featuredImagePath,
-        ]);
+            // 4. Create Campaign
+            $campaign = Campaign::create([
+                'user_id' => $user->id,
+                'beneficiary_id' => $beneficiary->id,
+                'hospital_id' => $validated['hospital_id'] ?? null,
+                'title' => $validated['title'],
+                'slug' => $slug,
+                'short_description' => $validated['short_description'],
+                'story' => $validated['story'],
+                'category' => $validated['category'],
+                'target_amount' => $validated['target_amount'],
+                'raised_amount' => 0.00,
+                'currency' => 'Kz',
+                'status' => 'pending_review', // Starts in PENDING_REVIEW as per specs
+                'location_province' => $validated['location_province'],
+                'location_municipality' => $validated['location_municipality'] ?? null,
+                'hospital_name' => $validated['hospital_name'] ?? null,
+                'treatment_location' => $validated['treatment_location'],
+                'expected_treatment_date' => $validated['expected_treatment_date'] ?? null,
+                'featured_image' => $featuredImagePath,
+            ]);
 
-        // 5. Store Itemized Financial Plan
-        if (!empty($request->fund_item_name) && is_array($request->fund_item_name)) {
-            foreach ($request->fund_item_name as $index => $name) {
-                if (!empty($name) && isset($request->fund_item_amount[$index])) {
-                    CampaignFundPlan::create([
-                        'campaign_id' => $campaign->id,
-                        'item_name' => $name,
-                        'estimated_amount' => (float)$request->fund_item_amount[$index],
-                    ]);
+            // 5. Store Itemized Financial Plan
+            if (!empty($request->fund_item_name) && is_array($request->fund_item_name)) {
+                foreach ($request->fund_item_name as $index => $name) {
+                    if (!empty($name) && isset($request->fund_item_amount[$index])) {
+                        CampaignFundPlan::create([
+                            'campaign_id' => $campaign->id,
+                            'item_name' => $name,
+                            'estimated_amount' => (float)$request->fund_item_amount[$index],
+                        ]);
+                    }
                 }
             }
-        }
 
-        // 6. Secure Upload of Private Confidential Documents
-        // Strict privacy requirement: stored in non-public private location
-        if ($request->hasFile('identity_document')) {
-            $idFile = $request->file('identity_document');
-            $randomName = 'id_' . Str::random(20) . '.' . $idFile->getClientOriginalExtension();
-            $path = $idFile->storeAs('private/documents/' . $campaign->id, $randomName, 'local');
-
-            CampaignDocument::create([
-                'campaign_id' => $campaign->id,
-                'document_type' => 'identity_card',
-                'original_name' => $idFile->getClientOriginalName(),
-                'file_path' => $path,
-                'file_mime' => $idFile->getClientMimeType(),
-                'file_size' => $idFile->getSize(),
-                'is_private' => true,
-                'uploaded_by' => $user->id,
-            ]);
-        }
-
-        if ($request->hasFile('medical_documents')) {
-            foreach ($request->file('medical_documents') as $medFile) {
-                $randomName = 'med_' . Str::random(20) . '.' . $medFile->getClientOriginalExtension();
-                $path = $medFile->storeAs('private/documents/' . $campaign->id, $randomName, 'local');
+            // 6. Secure Upload of Private Confidential Documents
+            // Strict privacy requirement: stored in non-public private location
+            if ($request->hasFile('identity_document')) {
+                $idFile = $request->file('identity_document');
+                $randomName = 'id_' . Str::random(20) . '.' . $idFile->getClientOriginalExtension();
+                $path = $idFile->storeAs('private/documents/' . $campaign->id, $randomName, 'local');
 
                 CampaignDocument::create([
                     'campaign_id' => $campaign->id,
-                    'document_type' => 'medical_report',
-                    'original_name' => $medFile->getClientOriginalName(),
+                    'document_type' => 'identity_card',
+                    'original_name' => $idFile->getClientOriginalName(),
                     'file_path' => $path,
-                    'file_mime' => $medFile->getClientMimeType(),
-                    'file_size' => $medFile->getSize(),
+                    'file_mime' => $idFile->getClientMimeType(),
+                    'file_size' => $idFile->getSize(),
                     'is_private' => true,
                     'uploaded_by' => $user->id,
                 ]);
             }
-        }
 
-        // Update User Role to 'applicant' if was donor
-        if ($user->role === 'donor') {
-            $user->update(['role' => 'applicant']);
-        }
+            if ($request->hasFile('medical_documents')) {
+                foreach ($request->file('medical_documents') as $medFile) {
+                    $randomName = 'med_' . Str::random(20) . '.' . $medFile->getClientOriginalExtension();
+                    $path = $medFile->storeAs('private/documents/' . $campaign->id, $randomName, 'local');
 
-        AuditLog::log(
-            action: 'campaign_submitted',
-            entityType: Campaign::class,
-            entityId: $campaign->id,
-            newValues: ['title' => $campaign->title, 'target_amount' => $campaign->target_amount]
-        );
+                    CampaignDocument::create([
+                        'campaign_id' => $campaign->id,
+                        'document_type' => 'medical_report',
+                        'original_name' => $medFile->getClientOriginalName(),
+                        'file_path' => $path,
+                        'file_mime' => $medFile->getClientMimeType(),
+                        'file_size' => $medFile->getSize(),
+                        'is_private' => true,
+                        'uploaded_by' => $user->id,
+                    ]);
+                }
+            }
+
+            // Update User Role to 'applicant' if was donor
+            if ($user->role === 'donor') {
+                $user->update(['role' => 'applicant']);
+            }
+
+            AuditLog::log(
+                action: 'campaign_submitted',
+                entityType: Campaign::class,
+                entityId: $campaign->id,
+                newValues: ['title' => $campaign->title, 'target_amount' => $campaign->target_amount]
+            );
+        });
 
         return redirect()->route('dashboard.campaigns')->with('success', 'Solicitação de campanha enviada com sucesso! A equipa da FundMe Angola fará a verificação dos documentos brevemente.');
     }

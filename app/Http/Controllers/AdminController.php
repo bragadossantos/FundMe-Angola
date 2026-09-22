@@ -13,9 +13,17 @@ use App\Models\PaymentDestination;
 use App\Models\FundDisbursement;
 use App\Models\AuditLog;
 use App\Models\Hospital;
+use App\Services\PaymentGatewayInterface;
 
 class AdminController extends Controller
 {
+    protected PaymentGatewayInterface $paymentGateway;
+
+    public function __construct(PaymentGatewayInterface $paymentGateway)
+    {
+        $this->paymentGateway = $paymentGateway;
+    }
+
     public function index()
     {
         $totalUsers = User::count();
@@ -114,6 +122,12 @@ class AdminController extends Controller
             $campaign->rejection_reason = $validated['rejection_reason'] ?? null;
         }
 
+        // A suspended, rejected or closed campaign must not keep displaying the
+        // "verified" trust badge to the public.
+        if (in_array($validated['status'], ['rejected', 'suspended', 'closed'])) {
+            $campaign->verification_badge = false;
+        }
+
         $campaign->save();
 
         // Log Verification Decision
@@ -201,6 +215,32 @@ class AdminController extends Controller
         return view('admin.donations.index', compact('donations'));
     }
 
+    /**
+     * Manually confirm a donation after staff have reconciled it against real
+     * bank/Multicaixa/KwanzaPay records. This is the only way a donation made
+     * through a real-world payment method can be marked as paid, since no live
+     * payment gateway is integrated yet.
+     */
+    public function confirmDonation(Donation $donation)
+    {
+        if ($donation->status === 'paid') {
+            return back()->with('info', 'Esta doação já se encontrava confirmada.');
+        }
+
+        $oldStatus = $donation->status;
+        $this->paymentGateway->confirmPayment($donation->payment_reference);
+
+        AuditLog::log(
+            action: 'donation_manually_confirmed_by_staff',
+            entityType: Donation::class,
+            entityId: $donation->id,
+            oldValues: ['status' => $oldStatus],
+            newValues: ['status' => 'paid', 'confirmed_by' => auth()->id()]
+        );
+
+        return back()->with('success', 'Doação confirmada com sucesso após verificação.');
+    }
+
     public function payments()
     {
         // Campaigns that reached goal or processing payment
@@ -214,17 +254,29 @@ class AdminController extends Controller
 
     public function disburse(Request $request, Campaign $campaign)
     {
-        $validated = $request->validate([
-            'amount' => 'required|numeric|min:1',
-            'transaction_reference' => 'required|string|max:255',
-            'public_summary_update' => 'required|string|min:10',
-            'proof_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-        ]);
+        // Funds can only be released once a campaign has actually reached its
+        // goal (or a previous partial disbursement already put it into the
+        // payment_processing stage) — never straight from published/under review.
+        if (!in_array($campaign->status, ['goal_reached', 'payment_processing'])) {
+            return back()->with('error', 'Esta campanha ainda não atingiu a meta de angariação — não é possível destinar fundos.');
+        }
 
         $destination = $campaign->paymentDestination;
         if (!$destination) {
             return back()->with('error', 'Por favor configure primeiro o Método de Destino dos Fundos para esta campanha.');
         }
+
+        $alreadyDisbursed = (float) $campaign->disbursements()->where('status', 'completed')->sum('amount');
+        $remaining = (float) $campaign->raised_amount - $alreadyDisbursed;
+
+        $validated = $request->validate([
+            'amount' => ['required', 'numeric', 'min:1', 'max:' . max($remaining, 0)],
+            'transaction_reference' => 'required|string|max:255',
+            'public_summary_update' => 'required|string|min:10',
+            'proof_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ], [
+            'amount.max' => 'O valor não pode exceder o saldo angariado ainda não desembolsado (' . number_format($remaining, 2, ',', '.') . ' Kz).',
+        ]);
 
         $proofPath = null;
         if ($request->hasFile('proof_file')) {
@@ -243,15 +295,25 @@ class AdminController extends Controller
             'status' => 'completed',
         ]);
 
-        // Update Campaign status to COMPLETED
-        $campaign->status = 'completed';
-        $campaign->closed_at = now();
+        // Only close the campaign once the full raised amount has been
+        // disbursed. A partial disbursement (e.g. split_payment) moves the
+        // campaign into payment_processing instead, allowing further
+        // disbursements until the balance reaches zero.
+        $totalDisbursed = $alreadyDisbursed + (float) $validated['amount'];
+        $isFullyDisbursed = $totalDisbursed >= (float) $campaign->raised_amount;
+
+        $campaign->status = $isFullyDisbursed ? 'completed' : 'payment_processing';
+        if ($isFullyDisbursed) {
+            $campaign->closed_at = now();
+        }
         $campaign->save();
 
         // Create Public Campaign Update for transparency timeline
         $campaign->updates()->create([
             'user_id' => auth()->id(),
-            'title' => '✅ Processo de Destinação dos Fundos Concluído',
+            'title' => $isFullyDisbursed
+                ? '✅ Processo de Destinação dos Fundos Concluído'
+                : '⏳ Destinação Parcial dos Fundos Realizada',
             'content' => $validated['public_summary_update'] . "\n\nReferência da Operação: " . $validated['transaction_reference'],
             'is_public' => true,
             'approved_by' => auth()->id(),
@@ -261,10 +323,12 @@ class AdminController extends Controller
             action: 'funds_disbursed',
             entityType: Campaign::class,
             entityId: $campaign->id,
-            newValues: ['amount' => $disbursement->amount, 'ref' => $disbursement->transaction_reference]
+            newValues: ['amount' => $disbursement->amount, 'ref' => $disbursement->transaction_reference, 'campaign_status' => $campaign->status]
         );
 
-        return back()->with('success', 'Destinação dos fundos registada com sucesso! A campanha foi marcada como Concluída.');
+        return back()->with('success', $isFullyDisbursed
+            ? 'Destinação dos fundos registada com sucesso! A campanha foi marcada como Concluída.'
+            : 'Destinação parcial registada com sucesso! A campanha permanece em processamento até o saldo total ser desembolsado.');
     }
 
     public function reports()

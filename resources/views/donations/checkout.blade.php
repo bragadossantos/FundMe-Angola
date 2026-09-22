@@ -43,6 +43,7 @@
                                 <li>Selecione a opção <strong>Pagamentos por Referência</strong>.</li>
                                 <li>Introduza a Referência acima indicada e confirme o montante de <strong>{{ number_format($donation->amount, 2, ',', '.') }} Kz</strong>.</li>
                             </ol>
+                            <p class="small mb-0 mt-2">Após o pagamento, a nossa equipa confirma manualmente a receção — não é necessária qualquer ação adicional sua.</p>
                         </div>
                     @elseif($donation->payment_method === 'bank_transfer')
                         <div class="alert alert-info border-0 mb-4">
@@ -50,6 +51,13 @@
                             <p class="small mb-1"><strong>Banco:</strong> BAI / BPC (Conta Escrow FundMe Angola)</p>
                             <p class="small mb-1"><strong>IBAN:</strong> AO06.0040.0000.1122.3344.5566.7</p>
                             <p class="small mb-0"><strong>Nota:</strong> Inclua a referência <strong>{{ $donation->payment_reference }}</strong> no descritivo da transferência.</p>
+                            <p class="small mb-0 mt-2">Após a transferência, a nossa equipa confirma manualmente a receção — não é necessária qualquer ação adicional sua.</p>
+                        </div>
+                    @elseif($donation->payment_method === 'kwanza_pay')
+                        <div class="alert alert-info border-0 mb-4">
+                            <h6><i class="bi bi-wallet2 me-1"></i> Instruções KwanzaPay:</h6>
+                            <p class="small mb-0">Abra a aplicação KwanzaPay, selecione <strong>Pagar por Referência</strong> e introduza a referência acima com o montante de <strong>{{ number_format($donation->amount, 2, ',', '.') }} Kz</strong>.</p>
+                            <p class="small mb-0 mt-2">Após o pagamento, a nossa equipa confirma manualmente a receção — não é necessária qualquer ação adicional sua.</p>
                         </div>
                     @else
                         <div class="alert alert-success border-0 mb-4">
@@ -60,11 +68,17 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('donations.confirm', $donation->id) }}" method="POST">
+                    <form action="{{ route('donations.confirm', $donation) }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-gold-fundme btn-lg w-100 py-3 shadow">
-                            <i class="bi bi-check-circle-fill me-2"></i> Confirmar Pagamento da Doação
-                        </button>
+                        @if($donation->payment_method === 'sandbox')
+                            <button type="submit" class="btn btn-gold-fundme btn-lg w-100 py-3 shadow">
+                                <i class="bi bi-check-circle-fill me-2"></i> Confirmar Pagamento da Doação
+                            </button>
+                        @else
+                            <button type="submit" class="btn btn-gold-fundme btn-lg w-100 py-3 shadow">
+                                <i class="bi bi-check-circle-fill me-2"></i> Já efetuei o pagamento
+                            </button>
+                        @endif
                     </form>
                 </div>
 

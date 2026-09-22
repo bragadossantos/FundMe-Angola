@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Hospital;
@@ -21,6 +22,21 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Never seed demo accounts with a hardcoded, publicly-documented
+        // password in production. Locally/in CI "password" is fine for
+        // developer convenience; in production a random one is generated
+        // and printed once to the deploy log so an operator can retrieve it
+        // and should change it immediately afterwards.
+        if (app()->environment('production')) {
+            $demoPassword = Str::password(20);
+            if ($this->command) {
+                $this->command->warn("Generated demo account password (SAVE THIS NOW, shown only once): {$demoPassword}");
+            }
+        } else {
+            $demoPassword = 'password';
+        }
+        $demoPasswordHash = Hash::make($demoPassword);
+
         // 1. Create Roles
         $roles = [
             ['name' => 'Administrador', 'slug' => 'admin', 'description' => 'Acesso total de gestão e decisões financeiras.'],
@@ -42,7 +58,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
             'province' => 'Luanda',
             'municipality' => 'Talatona',
-            'password' => Hash::make('password'),
+            'password' => $demoPasswordHash,
         ]);
 
         $verifier = User::create([
@@ -53,7 +69,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
             'province' => 'Luanda',
             'municipality' => 'Maianga',
-            'password' => Hash::make('password'),
+            'password' => $demoPasswordHash,
         ]);
 
         $applicant1 = User::create([
@@ -64,7 +80,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
             'province' => 'Luanda',
             'municipality' => 'Cazenga',
-            'password' => Hash::make('password'),
+            'password' => $demoPasswordHash,
         ]);
 
         $applicant2 = User::create([
@@ -75,7 +91,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
             'province' => 'Huíla',
             'municipality' => 'Lubango',
-            'password' => Hash::make('password'),
+            'password' => $demoPasswordHash,
         ]);
 
         $donor1 = User::create([
@@ -86,7 +102,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
             'province' => 'Luanda',
             'municipality' => 'Belas',
-            'password' => Hash::make('password'),
+            'password' => $demoPasswordHash,
         ]);
 
         $donor2 = User::create([
@@ -97,7 +113,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
             'province' => 'Benguela',
             'municipality' => 'Lobito',
-            'password' => Hash::make('password'),
+            'password' => $demoPasswordHash,
         ]);
 
         // 3. Create Hospitals

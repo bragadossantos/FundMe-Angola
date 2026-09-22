@@ -55,8 +55,9 @@ class DonationController extends Controller
         // 4. Initiate with Payment Service Gateway
         $gatewayResponse = $this->paymentGateway->createPayment($donation, $validated);
 
-        // 5. In Sandbox development mode, redirect to confirmation step
-        return redirect()->route('donations.checkout', ['donation' => $donation->id])
+        // 5. Redirect to the confirmation step using the donation's unguessable
+        // token (never the sequential id) so the URL cannot be enumerated.
+        return redirect()->route('donations.checkout', $donation)
             ->with('info', $gatewayResponse['message']);
     }
 
@@ -76,7 +77,20 @@ class DonationController extends Controller
             return redirect()->route('campaigns.show', $donation->campaign->slug);
         }
 
-        // Confirm payment via Gateway service
+        // Only the sandbox/demo method can be self-confirmed instantly, since it
+        // is the only "gateway" this platform actually integrates with. Real-world
+        // payment methods (Multicaixa Express, transferência bancária, KwanzaPay)
+        // have no live gateway behind them yet, so we must NOT let a visitor mark
+        // their own donation as paid — that would let anyone fake a payment.
+        // Those donations are instead routed to manual staff reconciliation.
+        if ($donation->payment_method !== 'sandbox') {
+            $donation->update(['status' => 'processing']);
+
+            return redirect()->route('campaigns.show', $donation->campaign->slug)
+                ->with('info', 'Registámos a sua doação. A nossa equipa irá confirmar manualmente a receção do pagamento e o valor será refletido na campanha assim que for validado.');
+        }
+
+        // Confirm payment via Gateway service (sandbox/demo only)
         $confirmedDonation = $this->paymentGateway->confirmPayment($donation->payment_reference);
 
         $campaign = $confirmedDonation->campaign;

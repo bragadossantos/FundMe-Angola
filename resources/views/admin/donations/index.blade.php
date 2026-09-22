@@ -22,6 +22,7 @@
                     <th>Método</th>
                     <th>Data de Confirmação</th>
                     <th>Estado</th>
+                    <th>Ação</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,6 +43,16 @@
                         <td class="small text-uppercase">{{ str_replace('_', ' ', $don->payment_method) }}</td>
                         <td class="small">{{ $don->paid_at ? $don->paid_at->format('d/m/Y H:i') : 'Pendente' }}</td>
                         <td><span class="badge {{ $don->status_badge_class }}">{{ $don->status_label }}</span></td>
+                        <td>
+                            @if($don->status !== 'paid' && $don->payment_method !== 'sandbox')
+                                <form action="{{ route('admin.donations.confirm_manual', $don) }}" method="POST" onsubmit="return confirm('Confirma que verificou a receção real deste pagamento?');">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="bi bi-check-circle"></i> Confirmar
+                                    </button>
+                                </form>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

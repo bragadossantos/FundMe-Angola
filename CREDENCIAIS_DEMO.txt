@@ -2,6 +2,14 @@
     FundMe Angola — Contas de Acesso e Demonstração
 =====================================================
 
+⚠️ APENAS PARA AMBIENTE LOCAL/DESENVOLVIMENTO.
+As palavras-passe abaixo ("password") SÓ se aplicam quando o seeder corre
+com APP_ENV=local. Em produção (APP_ENV=production), o seeder gera
+automaticamente uma palavra-passe aleatória única para cada conta de
+demonstração e imprime-a UMA ÚNICA VEZ no log do comando "db:seed" — essa
+password nunca é "password" e não fica registada em lado nenhum. Guarde-a
+imediatamente e troque-a a seguir ao primeiro login.
+
 1. ADMINISTRADOR DA PLATAFORMA (Painel Admin & Auditoria)
    - Email: admin@fundmeangola.ao
    - Palavra-passe: password

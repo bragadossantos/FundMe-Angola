@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use App\Models\User;
 use App\Models\AuditLog;
 
@@ -81,7 +82,7 @@ class AuthController extends Controller
         AuditLog::log(
             action: 'user_registered',
             entityType: User::class,
-            entityId: $user::class,
+            entityId: $user->id,
             newValues: ['name' => $user->name, 'email' => $user->email]
         );
 
@@ -105,6 +106,49 @@ class AuthController extends Controller
     public function sendResetLink(Request $request)
     {
         $request->validate(['email' => 'required|email']);
+
+        // Always show the same message regardless of the outcome, so the
+        // response itself never reveals whether an email is registered.
+        Password::sendResetLink($request->only('email'));
+
         return back()->with('success', 'Se o email existir no nosso sistema, receberá as instruções para redefinição da palavra-passe.');
+    }
+
+    public function showResetPassword(string $token, Request $request)
+    {
+        return view('auth.reset_password', [
+            'token' => $token,
+            'email' => $request->query('email', ''),
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'token' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $validated,
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                ])->save();
+
+                AuditLog::log(
+                    action: 'password_reset',
+                    entityType: User::class,
+                    entityId: $user->id
+                );
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return redirect()->route('login')->with('success', 'Palavra-passe redefinida com sucesso! Já pode iniciar sessão.');
+        }
+
+        return back()->withErrors(['email' => __($status)])->onlyInput('email');
     }
 }

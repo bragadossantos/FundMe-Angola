@@ -18,7 +18,7 @@ class HomeController extends Controller
 
         $urgentCampaigns = Campaign::published()
             ->where('status', 'published')
-            ->orderBy('created_at', 'asc')
+            ->orderByRaw('expected_treatment_date IS NULL, expected_treatment_date ASC')
             ->take(3)
             ->get();
 

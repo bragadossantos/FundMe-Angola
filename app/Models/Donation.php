@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Donation extends Model
 {
@@ -27,6 +28,16 @@ class Donation extends Model
         'is_anonymous' => 'boolean',
         'paid_at' => 'datetime',
     ];
+
+    /**
+     * Use the unguessable token (not the sequential id) for route binding,
+     * so a checkout/confirmation URL cannot be enumerated to view or
+     * confirm someone else's donation.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'confirmation_token';
+    }
 
     public function campaign()
     {
@@ -79,6 +90,12 @@ class Donation extends Model
 
     protected static function booted()
     {
+        static::creating(function ($donation) {
+            if (empty($donation->confirmation_token)) {
+                $donation->confirmation_token = (string) Str::random(40);
+            }
+        });
+
         static::saved(function ($donation) {
             if ($donation->campaign) {
                 $donation->campaign->recalculateRaisedAmount();

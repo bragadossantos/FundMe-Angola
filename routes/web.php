@@ -20,11 +20,11 @@ Route::get('/como-funciona', [HomeController::class, 'howItWorks'])->name('how_i
 Route::get('/campanhas', [CampaignController::class, 'index'])->name('campaigns.index');
 Route::get('/campanhas/{slug}', [CampaignController::class, 'show'])->name('campaigns.show');
 
-Route::post('/campanhas/{campaign}/doar', [DonationController::class, 'store'])->name('donations.store');
+Route::post('/campanhas/{campaign}/doar', [DonationController::class, 'store'])->name('donations.store')->middleware('throttle:10,1');
 Route::get('/doacoes/{donation}/checkout', [DonationController::class, 'checkout'])->name('donations.checkout');
-Route::post('/doacoes/{donation}/confirmar', [DonationController::class, 'confirm'])->name('donations.confirm');
+Route::post('/doacoes/{donation}/confirmar', [DonationController::class, 'confirm'])->name('donations.confirm')->middleware('throttle:10,1');
 
-Route::post('/campanhas/{campaign}/denunciar', [ReportController::class, 'store'])->name('reports.store');
+Route::post('/campanhas/{campaign}/denunciar', [ReportController::class, 'store'])->name('reports.store')->middleware('throttle:5,10');
 
 /*
 |--------------------------------------------------------------------------
@@ -33,11 +33,13 @@ Route::post('/campanhas/{campaign}/denunciar', [ReportController::class, 'store'
 */
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
     Route::get('/registo', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/registo', [AuthController::class, 'register']);
+    Route::post('/registo', [AuthController::class, 'register'])->middleware('throttle:5,1');
     Route::get('/esqueci-palavra-passe', [AuthController::class, 'showForgotPassword'])->name('forgot_password');
-    Route::post('/esqueci-palavra-passe', [AuthController::class, 'sendResetLink']);
+    Route::post('/esqueci-palavra-passe', [AuthController::class, 'sendResetLink'])->middleware('throttle:3,1');
+    Route::get('/redefinir-palavra-passe/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('/redefinir-palavra-passe', [AuthController::class, 'resetPassword'])->name('reset_password')->middleware('throttle:5,1');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
@@ -71,17 +73,24 @@ Route::middleware(['auth', 'verifier'])->prefix('admin')->name('admin.')->group(
     Route::get('/campanhas/{campaign}', [AdminController::class, 'showCampaign'])->name('campaigns.show');
     Route::post('/campanhas/{campaign}/status', [AdminController::class, 'updateCampaignStatus'])->name('campaigns.update_status');
 
-    Route::get('/utilizadores', [AdminController::class, 'users'])->name('users');
-    Route::post('/utilizadores/{user}/role', [AdminController::class, 'updateUserRole'])->name('users.update_role');
-
     Route::get('/doacoes', [AdminController::class, 'donations'])->name('donations');
-
-    Route::get('/pagamentos', [AdminController::class, 'payments'])->name('payments');
-    Route::post('/pagamentos/{campaign}/desembolsar', [AdminController::class, 'disburse'])->name('payments.disburse');
+    Route::post('/doacoes/{donation}/confirmar-manual', [AdminController::class, 'confirmDonation'])->name('donations.confirm_manual');
 
     Route::get('/denuncias', [AdminController::class, 'reports'])->name('reports');
     Route::post('/denuncias/{report}/status', [AdminController::class, 'updateReport'])->name('reports.update_status');
 
     Route::get('/documentos', [AdminController::class, 'documents'])->name('documents');
     Route::get('/logs', [AdminController::class, 'logs'])->name('logs');
+
+    // Admin-only: user role management and financial fund disbursement. A
+    // Verifier must NOT be able to promote accounts (including their own) to
+    // Admin, nor authorize the release of funds — both require the stricter
+    // 'admin' middleware on top of 'verifier'.
+    Route::middleware('admin')->group(function () {
+        Route::get('/utilizadores', [AdminController::class, 'users'])->name('users');
+        Route::post('/utilizadores/{user}/role', [AdminController::class, 'updateUserRole'])->name('users.update_role');
+
+        Route::get('/pagamentos', [AdminController::class, 'payments'])->name('payments');
+        Route::post('/pagamentos/{campaign}/desembolsar', [AdminController::class, 'disburse'])->name('payments.disburse');
+    });
 });

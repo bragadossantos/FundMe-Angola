@@ -115,6 +115,17 @@ function initMultiStepForm() {
 function initDynamicFundPlanItems() {
     const container = document.getElementById('fundPlanItemsContainer');
     const addBtn = document.getElementById('btnAddFundItem');
+    const targetAmountInput = document.getElementById('target_amount_input');
+
+    // Once the applicant types their own value into the target amount field,
+    // stop silently overwriting it every time an item row changes — only
+    // auto-fill while they haven't set it themselves.
+    let targetManuallyEdited = false;
+    if (targetAmountInput) {
+        targetAmountInput.addEventListener('input', function () {
+            targetManuallyEdited = true;
+        });
+    }
 
     if (container && addBtn) {
         addBtn.addEventListener('click', function () {
@@ -157,7 +168,6 @@ function initDynamicFundPlanItems() {
 
     function updateTotalFundGoal() {
         const inputs = document.querySelectorAll('.fund-amount-input');
-        const targetAmountInput = document.getElementById('target_amount_input');
         let total = 0;
 
         inputs.forEach(input => {
@@ -165,7 +175,7 @@ function initDynamicFundPlanItems() {
             total += val;
         });
 
-        if (targetAmountInput && total > 0) {
+        if (targetAmountInput && total > 0 && !targetManuallyEdited) {
             targetAmountInput.value = total;
         }
     }

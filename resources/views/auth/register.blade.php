@@ -30,40 +30,45 @@
                         @csrf
 
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Nome Completo *</label>
-                            <input type="text" name="name" value="{{ old('name') }}" class="form-control bg-light" placeholder="Ex: Teresa Agostinho Neto" required autofocus>
+                            <label for="register_name" class="form-label small fw-bold">Nome Completo *</label>
+                            <input type="text" id="register_name" name="name" value="{{ old('name') }}" class="form-control bg-light" placeholder="Ex: Teresa Agostinho Neto" required autofocus>
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Correio Eletrónico (Email) *</label>
-                                <input type="email" name="email" value="{{ old('email') }}" class="form-control bg-light" placeholder="email@dominio.ao" required>
+                                <label for="register_email" class="form-label small fw-bold">Correio Eletrónico (Email) *</label>
+                                <input type="email" id="register_email" name="email" value="{{ old('email') }}" class="form-control bg-light" placeholder="email@dominio.ao" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Telemóvel (WhatsApp) *</label>
-                                <input type="text" name="phone" value="{{ old('phone') }}" class="form-control bg-light" placeholder="+244 923 000 000" required>
+                                <label for="register_phone" class="form-label small fw-bold">Telemóvel (WhatsApp) *</label>
+                                <input type="text" id="register_phone" name="phone" value="{{ old('phone') }}" class="form-control bg-light" placeholder="+244 923 000 000" required>
                             </div>
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Província</label>
-                                <input type="text" name="province" value="{{ old('province') }}" class="form-control bg-light" placeholder="Ex: Luanda, Huambo">
+                                <label for="register_province" class="form-label small fw-bold">Província</label>
+                                <select id="register_province" name="province" class="form-select bg-light">
+                                    <option value="">Selecione...</option>
+                                    @foreach($provinces as $prov)
+                                        <option value="{{ $prov }}" {{ old('province') === $prov ? 'selected' : '' }}>{{ $prov }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Município</label>
-                                <input type="text" name="municipality" value="{{ old('municipality') }}" class="form-control bg-light" placeholder="Ex: Talatona, Lobito">
+                                <label for="register_municipality" class="form-label small fw-bold">Município</label>
+                                <input type="text" id="register_municipality" name="municipality" value="{{ old('municipality') }}" class="form-control bg-light" placeholder="Ex: Talatona, Lobito">
                             </div>
                         </div>
 
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Palavra-passe *</label>
-                                <input type="password" name="password" class="form-control bg-light" placeholder="Mínimo 8 caracteres" required>
+                                <label for="register_password" class="form-label small fw-bold">Palavra-passe *</label>
+                                <input type="password" id="register_password" name="password" class="form-control bg-light" placeholder="Mínimo 8 caracteres" required minlength="8">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Confirmar Palavra-passe *</label>
-                                <input type="password" name="password_confirmation" class="form-control bg-light" placeholder="Repita a palavra-passe" required>
+                                <label for="register_password_confirmation" class="form-label small fw-bold">Confirmar Palavra-passe *</label>
+                                <input type="password" id="register_password_confirmation" name="password_confirmation" class="form-control bg-light" placeholder="Repita a palavra-passe" required minlength="8">
                             </div>
                         </div>
 

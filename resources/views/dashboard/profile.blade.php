@@ -20,34 +20,34 @@
                     <h5 class="font-heading mb-3"><i class="bi bi-person-lines-fill text-primary me-2"></i> Dados Pessoais</h5>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Nome Completo *</label>
-                        <input type="text" name="name" value="{{ old('name', $user->name) }}" class="form-control" required>
+                        <label for="profile_name" class="form-label small fw-bold">Nome Completo *</label>
+                        <input type="text" id="profile_name" name="name" value="{{ old('name', $user->name) }}" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Correio Eletrónico (Email)</label>
-                        <input type="email" class="form-control bg-light" value="{{ $user->email }}" disabled>
+                        <label for="profile_email" class="form-label small fw-bold">Correio Eletrónico (Email)</label>
+                        <input type="email" id="profile_email" class="form-control bg-light" value="{{ $user->email }}" disabled>
                         <span class="form-text text-muted small">O email de registo não pode ser alterado diretamente por motivos de segurança.</span>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Telemóvel (WhatsApp) *</label>
-                        <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" class="form-control" required>
+                        <label for="profile_phone" class="form-label small fw-bold">Telemóvel (WhatsApp) *</label>
+                        <input type="text" id="profile_phone" name="phone" value="{{ old('phone', $user->phone) }}" class="form-control" required>
                     </div>
 
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Província</label>
-                            <select name="province" class="form-select">
+                            <label for="profile_province" class="form-label small fw-bold">Província</label>
+                            <select id="profile_province" name="province" class="form-select">
                                 <option value="">Selecione...</option>
                                 @foreach($provinces as $prov)
-                                    <option value="{{ $prov }}" {{ $user->province === $prov ? 'selected' : '' }}>{{ $prov }}</option>
+                                    <option value="{{ $prov }}" {{ old('province', $user->province) === $prov ? 'selected' : '' }}>{{ $prov }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Município</label>
-                            <input type="text" name="municipality" value="{{ old('municipality', $user->municipality) }}" class="form-control">
+                            <label for="profile_municipality" class="form-label small fw-bold">Município</label>
+                            <input type="text" id="profile_municipality" name="municipality" value="{{ old('municipality', $user->municipality) }}" class="form-control">
                         </div>
                     </div>
 
@@ -56,18 +56,18 @@
                     <h5 class="font-heading mb-3"><i class="bi bi-lock-fill text-danger me-2"></i> Alterar Palavra-passe</h5>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Palavra-passe Atual</label>
-                        <input type="password" name="current_password" class="form-control" placeholder="Deixe em branco para não alterar">
+                        <label for="profile_current_password" class="form-label small fw-bold">Palavra-passe Atual</label>
+                        <input type="password" id="profile_current_password" name="current_password" class="form-control" placeholder="Deixe em branco para não alterar">
                     </div>
 
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Nova Palavra-passe</label>
-                            <input type="password" name="password" class="form-control" placeholder="Mínimo 8 caracteres">
+                            <label for="profile_password" class="form-label small fw-bold">Nova Palavra-passe</label>
+                            <input type="password" id="profile_password" name="password" class="form-control" placeholder="Mínimo 8 caracteres" minlength="8">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Confirmar Nova Palavra-passe</label>
-                            <input type="password" name="password_confirmation" class="form-control" placeholder="Repita a nova palavra-passe">
+                            <label for="profile_password_confirmation" class="form-label small fw-bold">Confirmar Nova Palavra-passe</label>
+                            <input type="password" id="profile_password_confirmation" name="password_confirmation" class="form-control" placeholder="Repita a nova palavra-passe" minlength="8">
                         </div>
                     </div>
 

@@ -35,7 +35,7 @@
                             <i class="bi bi-person-circle me-1"></i> {{ Str::words(auth()->user()->name, 2, '') }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userMenu">
-                            <li><a class="dropdown-menu-item dropdown-item" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Meu Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Meu Dashboard</a></li>
                             <li><a class="dropdown-item" href="{{ route('dashboard.campaigns') }}"><i class="bi bi-folder2-open me-2"></i> Minhas Campanhas</a></li>
                             <li><a class="dropdown-item" href="{{ route('dashboard.donations') }}"><i class="bi bi-heart me-2"></i> Minhas Doações</a></li>
                             <li><a class="dropdown-item" href="{{ route('dashboard.profile') }}"><i class="bi bi-gear me-2"></i> Definições de Perfil</a></li>

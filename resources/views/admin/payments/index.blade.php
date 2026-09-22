@@ -33,7 +33,10 @@
                         </td>
                         <td>
                             <span class="d-block small text-muted">Meta: {{ $camp->formatted_target_amount }}</span>
-                            <span class="fw-bold text-success">{{ number_format($camp->raised_amount, 2, ',', '.') }} Kz</span>
+                            <span class="fw-bold text-success">{{ number_format($camp->raised_amount, 2, ',', '.') }} Kz angariados</span>
+                            @if($camp->remaining_to_disburse < (float) $camp->raised_amount)
+                                <span class="d-block small text-warning fw-bold">Saldo por desembolsar: {{ number_format($camp->remaining_to_disburse, 2, ',', '.') }} Kz</span>
+                            @endif
                         </td>
                         <td>
                             @if($camp->paymentDestination)
@@ -77,32 +80,34 @@
                                     <div class="modal-body p-4">
                                         <div class="alert alert-info border-0 mb-4">
                                             <h6 class="fw-bold mb-1">Campanha: {{ $camp->title }}</h6>
-                                            <p class="small mb-0">Total Angariado a Transferir: <strong>{{ number_format($camp->raised_amount, 2, ',', '.') }} Kz</strong></p>
+                                            <p class="small mb-0">Total Angariado: <strong>{{ number_format($camp->raised_amount, 2, ',', '.') }} Kz</strong></p>
+                                            <p class="small mb-0">Saldo por Desembolsar: <strong>{{ number_format($camp->remaining_to_disburse, 2, ',', '.') }} Kz</strong></p>
                                         </div>
 
                                         <div class="row g-3">
                                             <div class="col-md-6">
-                                                <label class="form-label fw-bold small">Montante Efetivo Transferido (Kz) *</label>
-                                                <input type="number" name="amount" value="{{ $camp->raised_amount }}" class="form-control" step="0.01" required>
+                                                <label for="disburse_amount_{{ $camp->id }}" class="form-label fw-bold small">Montante Efetivo Transferido (Kz) *</label>
+                                                <input type="number" id="disburse_amount_{{ $camp->id }}" name="amount" value="{{ $camp->remaining_to_disburse }}" max="{{ $camp->remaining_to_disburse }}" class="form-control disburse-amount-input" data-remaining="{{ $camp->remaining_to_disburse }}" data-feedback-target="disburse_feedback_{{ $camp->id }}" data-submit-target="disburse_submit_{{ $camp->id }}" step="0.01" min="0.01" required>
+                                                <span class="form-text small" id="disburse_feedback_{{ $camp->id }}"></span>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label fw-bold small">Nº de Referência / Comprovativo Bancário *</label>
-                                                <input type="text" name="transaction_reference" class="form-control" placeholder="Ex: TR-2026-BAI-009988" required>
+                                                <label for="disburse_ref_{{ $camp->id }}" class="form-label fw-bold small">Nº de Referência / Comprovativo Bancário *</label>
+                                                <input type="text" id="disburse_ref_{{ $camp->id }}" name="transaction_reference" class="form-control" placeholder="Ex: TR-2026-BAI-009988" required>
                                             </div>
                                             <div class="col-md-12">
-                                                <label class="form-label fw-bold small">Comprovativo Bancário (PDF / Imagem)</label>
-                                                <input type="file" name="proof_file" class="form-control">
+                                                <label for="disburse_proof_{{ $camp->id }}" class="form-label fw-bold small">Comprovativo Bancário (PDF / Imagem)</label>
+                                                <input type="file" id="disburse_proof_{{ $camp->id }}" name="proof_file" class="form-control">
                                                 <span class="form-text text-muted small">Anexe o talão ou borderô bancário original.</span>
                                             </div>
                                             <div class="col-md-12">
-                                                <label class="form-label fw-bold small">Nota Pública de Transparência (Atualização para Doadores) *</label>
-                                                <textarea name="public_summary_update" class="form-control" rows="3" placeholder="Informação pública a ser partilhada com os doadores na página da campanha confirmando o pagamento ao hospital..." required></textarea>
+                                                <label for="disburse_summary_{{ $camp->id }}" class="form-label fw-bold small">Nota Pública de Transparência (Atualização para Doadores) *</label>
+                                                <textarea id="disburse_summary_{{ $camp->id }}" name="public_summary_update" class="form-control" rows="3" placeholder="Informação pública a ser partilhada com os doadores na página da campanha confirmando o pagamento ao hospital..." required></textarea>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer border-0">
                                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-success px-4">Confirmar e Finalizar Campanha</button>
+                                        <button type="submit" id="disburse_submit_{{ $camp->id }}" class="btn btn-success px-4">Confirmar e Finalizar Campanha</button>
                                     </div>
                                 </form>
                             </div>

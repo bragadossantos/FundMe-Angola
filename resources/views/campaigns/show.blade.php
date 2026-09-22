@@ -2,6 +2,9 @@
 
 @section('title', $campaign->title . ' — FundMe Angola')
 @section('meta_description', Str::limit($campaign->short_description, 150))
+@section('og_title', $campaign->title . ' — FundMe Angola')
+@section('og_description', Str::limit($campaign->short_description, 150))
+@section('og_image', $campaign->featured_image ? asset('storage/' . $campaign->featured_image) : asset('favicon.svg'))
 
 @section('content')
 <!-- Header Banner -->
@@ -24,8 +27,12 @@
             </div>
 
             <div class="d-flex gap-2">
+                <a class="btn btn-success btn-sm rounded-pill" target="_blank" rel="noopener"
+                   href="https://wa.me/?text={{ urlencode($campaign->title . ' — ajude esta causa na FundMe Angola: ' . url()->current()) }}">
+                    <i class="bi bi-whatsapp me-1"></i> Partilhar no WhatsApp
+                </a>
                 <button class="btn btn-outline-primary btn-sm rounded-pill btn-copy-link" data-link="{{ url()->current() }}">
-                    <i class="bi bi-share-fill me-1"></i> Partilhar Link
+                    <i class="bi bi-share-fill me-1"></i> Copiar Link
                 </button>
                 <button class="btn btn-outline-danger btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#reportModal">
                     <i class="bi bi-flag-fill me-1"></i> Denunciar
@@ -218,7 +225,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label small fw-bold text-muted">Outro Valor (Kz)</label>
+                                <label for="donation_amount_input" class="form-label small fw-bold text-muted">Outro Valor (Kz)</label>
                                 <div class="input-group">
                                     <input type="number" name="amount" id="donation_amount_input" class="form-control form-control-lg fw-bold" placeholder="Digite o valor" min="100" value="2500" required>
                                     <span class="input-group-text fw-bold">Kz</span>
@@ -226,8 +233,8 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label small fw-bold text-muted">Método de Pagamento</label>
-                                <select name="payment_method" class="form-select">
+                                <label for="donation_payment_method" class="form-label small fw-bold text-muted">Método de Pagamento</label>
+                                <select id="donation_payment_method" name="payment_method" class="form-select">
                                     <option value="multicaixa_express">Multicaixa Express (Angola)</option>
                                     <option value="bank_transfer">Transferência Bancária (IBAN)</option>
                                     <option value="kwanza_pay">KwanzaPay</option>
@@ -245,8 +252,8 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label small text-muted">Mensagem de Apoio (Opcional)</label>
-                                <textarea name="donor_message" class="form-control form-control-sm" rows="2" placeholder="Deixe uma palavra de esperança..."></textarea>
+                                <label for="donor_message" class="form-label small text-muted">Mensagem de Apoio (Opcional)</label>
+                                <textarea id="donor_message" name="donor_message" class="form-control form-control-sm" rows="2" placeholder="Deixe uma palavra de esperança..."></textarea>
                             </div>
 
                             <button type="submit" class="btn btn-gold-fundme btn-lg w-100 py-3 shadow mb-3">
@@ -286,8 +293,8 @@
                     </p>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Motivo da Denúncia</label>
-                        <select name="reason" class="form-select" required>
+                        <label for="report_reason" class="form-label small fw-bold">Motivo da Denúncia</label>
+                        <select id="report_reason" name="reason" class="form-select" required>
                             <option value="">Selecione o motivo...</option>
                             <option value="suspected_fraud">Suspeita de Fraude ou Pedido Falso</option>
                             <option value="false_information">Informações Médicas Incorretas</option>
@@ -298,13 +305,13 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Descrição dos Factos</label>
-                        <textarea name="description" class="form-control" rows="4" placeholder="Descreva os detalhes que fundamentam a sua suspeita..." required></textarea>
+                        <label for="report_description" class="form-label small fw-bold">Descrição dos Factos</label>
+                        <textarea id="report_description" name="description" class="form-control" rows="4" placeholder="Descreva os detalhes que fundamentam a sua suspeita..." required></textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Ficheiro Comprovativo (Opcional)</label>
-                        <input type="file" name="evidence_file" class="form-control">
+                        <label for="report_evidence_file" class="form-label small fw-bold">Ficheiro Comprovativo (Opcional)</label>
+                        <input type="file" id="report_evidence_file" name="evidence_file" class="form-control">
                         <span class="form-text text-muted small">Imagens, captura de ecrã ou documento comprovativo (Max: 5MB)</span>
                     </div>
                 </div>

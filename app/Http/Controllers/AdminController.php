@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Campaign;
 use App\Models\User;
 use App\Models\Donation;
@@ -267,7 +268,7 @@ class AdminController extends Controller
         }
 
         $alreadyDisbursed = (float) $campaign->disbursements()->where('status', 'completed')->sum('amount');
-        $remaining = (float) $campaign->raised_amount - $alreadyDisbursed;
+        $remaining = $campaign->remaining_to_disburse;
 
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:1', 'max:' . max($remaining, 0)],
@@ -335,6 +336,21 @@ class AdminController extends Controller
     {
         $reports = Report::with(['campaign', 'reporter'])->latest()->paginate(15);
         return view('admin.reports.index', compact('reports'));
+    }
+
+    public function downloadReportEvidence(Report $report)
+    {
+        if (!$report->evidence_file_path || !Storage::disk('local')->exists($report->evidence_file_path)) {
+            abort(404, 'Nenhum ficheiro de evidência encontrado para esta denúncia.');
+        }
+
+        AuditLog::log(
+            action: 'report_evidence_accessed',
+            entityType: Report::class,
+            entityId: $report->id
+        );
+
+        return Storage::disk('local')->download($report->evidence_file_path);
     }
 
     public function updateReport(Request $request, Report $report)

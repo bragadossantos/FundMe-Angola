@@ -34,6 +34,7 @@ class Campaign extends Model
         'rejection_reason',
         'published_at',
         'closed_at',
+        'terms_accepted_at',
     ];
 
     protected $casts = [
@@ -44,6 +45,7 @@ class Campaign extends Model
         'expected_treatment_date' => 'date',
         'published_at' => 'datetime',
         'closed_at' => 'datetime',
+        'terms_accepted_at' => 'datetime',
     ];
 
     // Scopes
@@ -174,6 +176,20 @@ class Campaign extends Model
             'closed' => 'bg-secondary',
             default => 'bg-secondary',
         };
+    }
+
+    /**
+     * How much of the raised amount has not yet been disbursed. Used to cap
+     * further disbursements and to show staff the correct remaining balance
+     * for campaigns already partially paid out (payment_processing).
+     */
+    public function getRemainingToDisburseAttribute(): float
+    {
+        $disbursed = $this->relationLoaded('disbursements')
+            ? $this->disbursements->where('status', 'completed')->sum('amount')
+            : $this->disbursements()->where('status', 'completed')->sum('amount');
+
+        return max(0.0, (float) $this->raised_amount - (float) $disbursed);
     }
 
     /**

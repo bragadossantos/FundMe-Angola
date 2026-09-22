@@ -40,8 +40,8 @@
             <div class="col-lg-3">
                 <h5 class="footer-title text-white fw-bold">Contacto Oficial</h5>
                 <p class="small text-white mb-2"><i class="bi bi-geo-alt me-2 text-warning"></i> Luanda, Angola</p>
-                <p class="small text-white mb-2"><i class="bi bi-envelope me-2 text-warning"></i> suporte@fundmeangola.ao</p>
-                <p class="small text-white mb-3"><i class="bi bi-telephone me-2 text-warning"></i> +244 923 000 000</p>
+                <p class="small text-white mb-2"><i class="bi bi-envelope me-2 text-warning"></i> <a href="mailto:suporte@fundmeangola.ao" class="text-white text-decoration-none">suporte@fundmeangola.ao</a></p>
+                <p class="small text-white mb-3"><i class="bi bi-telephone me-2 text-warning"></i> <a href="tel:+244923000000" class="text-white text-decoration-none">+244 923 000 000</a></p>
                 <div class="border-top border-secondary pt-3 mt-3">
                     <span class="small text-white"><i class="bi bi-shield-lock-fill text-warning me-1"></i> Sistema 100% Auditado</span>
                 </div>

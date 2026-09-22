@@ -158,6 +158,10 @@ class CampaignController extends Controller
             'featured_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'medical_documents.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:10240',
             'identity_document' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:10240',
+
+            // Honor declaration — must be explicitly accepted and is kept as
+            // a timestamped record, not just enforced client-side.
+            'terms_accepted' => 'required|accepted',
         ]);
 
         // All related rows (beneficiary, campaign, fund plan items, documents)
@@ -211,6 +215,7 @@ class CampaignController extends Controller
                 'treatment_location' => $validated['treatment_location'],
                 'expected_treatment_date' => $validated['expected_treatment_date'] ?? null,
                 'featured_image' => $featuredImagePath,
+                'terms_accepted_at' => now(),
             ]);
 
             // 5. Store Itemized Financial Plan

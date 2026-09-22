@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initDynamicFundPlanItems();
     initImagePreviews();
     initCopyLinks();
+    initDisbursementModals();
 });
 
 /**
@@ -47,7 +48,15 @@ function initMultiStepForm() {
 
     const steps = document.querySelectorAll('.wizard-step');
     const stepIndicators = document.querySelectorAll('.step-indicator-item');
-    let currentStep = 0;
+    const caption = document.getElementById('wizard-step-caption');
+
+    // If the server rejected the submission, the Blade view already worked
+    // out which step contains the first invalid field via data-start-step —
+    // resume there instead of always restarting at Step 1.
+    let currentStep = parseInt(form.getAttribute('data-start-step'), 10);
+    if (isNaN(currentStep) || currentStep < 0 || currentStep >= steps.length) {
+        currentStep = 0;
+    }
 
     function showStep(stepIndex) {
         steps.forEach((step, idx) => {
@@ -55,15 +64,19 @@ function initMultiStepForm() {
         });
 
         stepIndicators.forEach((ind, idx) => {
+            ind.removeAttribute('aria-current');
+            ind.classList.remove('active', 'completed', 'fw-bold', 'text-primary', 'text-success');
             if (idx === stepIndex) {
                 ind.classList.add('active', 'fw-bold', 'text-primary');
+                ind.setAttribute('aria-current', 'step');
             } else if (idx < stepIndex) {
                 ind.classList.add('completed', 'text-success');
-                ind.classList.remove('active');
-            } else {
-                ind.classList.remove('active', 'completed', 'fw-bold');
             }
         });
+
+        if (caption) {
+            caption.textContent = 'Passo ' + (stepIndex + 1) + ' de ' + steps.length;
+        }
 
         window.scrollTo({ top: 150, behavior: 'smooth' });
     }
@@ -71,15 +84,15 @@ function initMultiStepForm() {
     const nextButtons = document.querySelectorAll('.btn-next-step');
     const prevButtons = document.querySelectorAll('.btn-prev-step');
 
+    function goNext() {
+        if (validateCurrentStep(currentStep) && currentStep < steps.length - 1) {
+            currentStep++;
+            showStep(currentStep);
+        }
+    }
+
     nextButtons.forEach(btn => {
-        btn.addEventListener('click', function () {
-            if (validateCurrentStep(currentStep)) {
-                if (currentStep < steps.length - 1) {
-                    currentStep++;
-                    showStep(currentStep);
-                }
-            }
-        });
+        btn.addEventListener('click', goNext);
     });
 
     prevButtons.forEach(btn => {
@@ -89,6 +102,19 @@ function initMultiStepForm() {
                 showStep(currentStep);
             }
         });
+    });
+
+    // Pressing Enter in a text field implicitly submits the form via its
+    // default submit button — which lives on the last step, even while
+    // earlier steps are still hidden and possibly incomplete. Treat Enter as
+    // "next step" instead, unless already on the final step or typing a
+    // multi-line answer in a textarea (where Enter should insert a newline).
+    form.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' || e.target.tagName === 'TEXTAREA') return;
+        if (currentStep < steps.length - 1) {
+            e.preventDefault();
+            goNext();
+        }
     });
 
     function validateCurrentStep(stepIdx) {
@@ -204,7 +230,46 @@ function initImagePreviews() {
 }
 
 /**
- * 5. Copy Link to Clipboard
+ * 5. Fund Disbursement Modals — reflect whether the entered amount is a full
+ * or partial payout, since a partial one no longer "finalizes" the campaign
+ * (it moves it to payment_processing so further disbursements can follow).
+ */
+function initDisbursementModals() {
+    const amountInputs = document.querySelectorAll('.disburse-amount-input');
+
+    amountInputs.forEach(input => {
+        const remaining = parseFloat(input.getAttribute('data-remaining')) || 0;
+        const feedback = document.getElementById(input.getAttribute('data-feedback-target'));
+        const submitBtn = document.getElementById(input.getAttribute('data-submit-target'));
+
+        function update() {
+            const val = parseFloat(input.value) || 0;
+            const isFull = val >= remaining && val > 0;
+
+            if (feedback) {
+                if (val <= 0) {
+                    feedback.textContent = '';
+                } else if (isFull) {
+                    feedback.textContent = 'Este valor cobre a totalidade do saldo — a campanha será marcada como Concluída.';
+                    feedback.className = 'form-text small text-success';
+                } else {
+                    feedback.textContent = 'Este valor é parcial — a campanha permanecerá em processamento até o saldo total ser desembolsado.';
+                    feedback.className = 'form-text small text-warning';
+                }
+            }
+
+            if (submitBtn) {
+                submitBtn.textContent = isFull ? 'Confirmar e Finalizar Campanha' : 'Confirmar Desembolso Parcial';
+            }
+        }
+
+        input.addEventListener('input', update);
+        update();
+    });
+}
+
+/**
+ * 6. Copy Link to Clipboard
  */
 function initCopyLinks() {
     const copyBtns = document.querySelectorAll('.btn-copy-link');

@@ -31,18 +31,18 @@
                         <input type="hidden" name="token" value="{{ $token }}">
 
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Endereço de Correio Eletrónico (Email)</label>
-                            <input type="email" name="email" value="{{ old('email', $email) }}" class="form-control bg-light" placeholder="exemplo@dominio.ao" required autofocus>
+                            <label for="reset_email" class="form-label small fw-bold">Endereço de Correio Eletrónico (Email)</label>
+                            <input type="email" id="reset_email" name="email" value="{{ old('email', $email) }}" class="form-control bg-light" placeholder="exemplo@dominio.ao" required autofocus>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Nova Palavra-passe</label>
-                            <input type="password" name="password" class="form-control bg-light" placeholder="Mínimo 8 caracteres" required minlength="8">
+                            <label for="reset_password" class="form-label small fw-bold">Nova Palavra-passe</label>
+                            <input type="password" id="reset_password" name="password" class="form-control bg-light" placeholder="Mínimo 8 caracteres" required minlength="8">
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label small fw-bold">Confirmar Nova Palavra-passe</label>
-                            <input type="password" name="password_confirmation" class="form-control bg-light" placeholder="Repita a palavra-passe" required minlength="8">
+                            <label for="reset_password_confirmation" class="form-label small fw-bold">Confirmar Nova Palavra-passe</label>
+                            <input type="password" id="reset_password_confirmation" name="password_confirmation" class="form-control bg-light" placeholder="Repita a palavra-passe" required minlength="8">
                         </div>
 
                         <button type="submit" class="btn btn-primary-fundme btn-lg w-100 py-3 mb-3 shadow">

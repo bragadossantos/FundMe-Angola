@@ -118,8 +118,8 @@
                 @csrf
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold small">Alterar Estado da Campanha *</label>
-                    <select name="status" class="form-select form-select-lg fw-bold" required>
+                    <label for="campaign_status_select" class="form-label fw-bold small">Alterar Estado da Campanha *</label>
+                    <select id="campaign_status_select" name="status" class="form-select form-select-lg fw-bold" required>
                         <option value="approved" {{ $campaign->status === 'approved' ? 'selected' : '' }}>Aprovar (Validada)</option>
                         <option value="published" {{ $campaign->status === 'published' ? 'selected' : '' }}>Publicar Imediatamente (Receber Doações)</option>
                         <option value="waiting_documents" {{ $campaign->status === 'waiting_documents' ? 'selected' : '' }}>Solicitar Mais Documentos Comprovativos</option>
@@ -130,52 +130,54 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold small">Modalidade de Destino dos Fundos Accumulados *</label>
-                    <select name="payment_destination_type" class="form-select" required>
+                    <label for="payment_destination_type_select" class="form-label fw-bold small">Modalidade de Destino dos Fundos Acumulados</label>
+                    <select id="payment_destination_type_select" name="payment_destination_type" class="form-select">
+                        <option value="" {{ !optional($campaign->paymentDestination)->destination_type ? 'selected' : '' }}>Não definir agora (ex: apenas rejeitar ou pedir documentos)</option>
                         <option value="hospital_direct" {{ optional($campaign->paymentDestination)->destination_type === 'hospital_direct' ? 'selected' : '' }}>🏥 Pagamento Direto ao Hospital / Clínica</option>
                         <option value="beneficiary_transfer" {{ optional($campaign->paymentDestination)->destination_type === 'beneficiary_transfer' ? 'selected' : '' }}>👤 Transferência Direta ao Beneficiário / Solicitante</option>
                         <option value="split_payment" {{ optional($campaign->paymentDestination)->destination_type === 'split_payment' ? 'selected' : '' }}>💊 Pagamento Dividido (Hospital & Fornecedores)</option>
                     </select>
+                    <span class="form-text text-muted small">Só é necessário definir ao aprovar/publicar a campanha. Deixar em branco não altera nem apaga uma configuração já existente.</span>
                 </div>
 
                 <div class="p-3 bg-light rounded-3 mb-3 border">
                     <h6 class="fw-bold small mb-2 text-dark">Dados Bancários / Institucionais Privados (Escrow):</h6>
 
                     <div class="mb-2">
-                        <label class="form-label small text-muted mb-0">Instituição ou Favorecido Oficial</label>
-                        <input type="text" name="institution_or_payee_name" value="{{ old('institution_or_payee_name', optional($campaign->paymentDestination)->institution_or_payee_name) }}" class="form-control form-control-sm" placeholder="Ex: Complexo Hospitalar Cardeal Dom Alexandre">
+                        <label for="institution_or_payee_name" class="form-label small text-muted mb-0">Instituição ou Favorecido Oficial</label>
+                        <input type="text" id="institution_or_payee_name" name="institution_or_payee_name" value="{{ old('institution_or_payee_name', optional($campaign->paymentDestination)->institution_or_payee_name) }}" class="form-control form-control-sm" placeholder="Ex: Complexo Hospitalar Cardeal Dom Alexandre">
                     </div>
 
                     <div class="row g-2 mb-2">
                         <div class="col-6">
-                            <label class="form-label small text-muted mb-0">Banco</label>
-                            <input type="text" name="bank_name" value="{{ old('bank_name', optional($campaign->paymentDestination)->bank_name) }}" class="form-control form-control-sm" placeholder="Ex: BAI, BPC, BFA">
+                            <label for="bank_name" class="form-label small text-muted mb-0">Banco</label>
+                            <input type="text" id="bank_name" name="bank_name" value="{{ old('bank_name', optional($campaign->paymentDestination)->bank_name) }}" class="form-control form-control-sm" placeholder="Ex: BAI, BPC, BFA">
                         </div>
                         <div class="col-6">
-                            <label class="form-label small text-muted mb-0">Nº de Conta</label>
-                            <input type="text" name="account_number" value="{{ old('account_number', optional($campaign->paymentDestination)->account_number) }}" class="form-control form-control-sm" placeholder="Nº Conta">
+                            <label for="account_number" class="form-label small text-muted mb-0">Nº de Conta</label>
+                            <input type="text" id="account_number" name="account_number" value="{{ old('account_number', optional($campaign->paymentDestination)->account_number) }}" class="form-control form-control-sm" placeholder="Nº Conta">
                         </div>
                     </div>
 
                     <div class="mb-2">
-                        <label class="form-label small text-muted mb-0">IBAN Oficial</label>
-                        <input type="text" name="iban" value="{{ old('iban', optional($campaign->paymentDestination)->iban) }}" class="form-control form-control-sm" placeholder="AO06.0000.0000.0000.0000.0000.0">
+                        <label for="iban" class="form-label small text-muted mb-0">IBAN Oficial</label>
+                        <input type="text" id="iban" name="iban" value="{{ old('iban', optional($campaign->paymentDestination)->iban) }}" class="form-control form-control-sm" placeholder="AO06.0000.0000.0000.0000.0000.0">
                     </div>
 
                     <div class="mb-2">
-                        <label class="form-label small text-muted mb-0">Nº Fatura Proforma / Referência Hospitalar</label>
-                        <input type="text" name="invoice_reference" value="{{ old('invoice_reference', optional($campaign->paymentDestination)->invoice_reference) }}" class="form-control form-control-sm" placeholder="Ex: FAT-2026-084">
+                        <label for="invoice_reference" class="form-label small text-muted mb-0">Nº Fatura Proforma / Referência Hospitalar</label>
+                        <input type="text" id="invoice_reference" name="invoice_reference" value="{{ old('invoice_reference', optional($campaign->paymentDestination)->invoice_reference) }}" class="form-control form-control-sm" placeholder="Ex: FAT-2026-084">
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold small">Motivo da Rejeição (Caso aplicável)</label>
-                    <textarea name="rejection_reason" class="form-control form-control-sm" rows="2" placeholder="Explicação visível para o solicitante em caso de rejeição...">{{ $campaign->rejection_reason }}</textarea>
+                    <label for="rejection_reason" class="form-label fw-bold small">Motivo da Rejeição (Caso aplicável)</label>
+                    <textarea id="rejection_reason" name="rejection_reason" class="form-control form-control-sm" rows="2" placeholder="Explicação visível para o solicitante em caso de rejeição...">{{ old('rejection_reason', $campaign->rejection_reason) }}</textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold small">Notas de Auditoria Interna (Obrigatório) *</label>
-                    <textarea name="internal_notes" class="form-control" rows="3" placeholder="Registe os detalhes das verificações efetuadas (ex: contacto com hospital, autenticidade do BI)..." required></textarea>
+                    <label for="internal_notes" class="form-label fw-bold small">Notas de Auditoria Interna (Obrigatório) *</label>
+                    <textarea id="internal_notes" name="internal_notes" class="form-control" rows="3" placeholder="Registe os detalhes das verificações efetuadas (ex: contacto com hospital, autenticidade do BI)..." required>{{ old('internal_notes') }}</textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary-fundme btn-lg w-100 py-3 shadow">

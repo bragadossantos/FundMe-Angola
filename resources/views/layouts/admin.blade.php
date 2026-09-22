@@ -8,19 +8,27 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body class="bg-light">
 
     <nav class="navbar navbar-dark bg-dark sticky-top shadow-sm px-3">
         <div class="container-fluid">
+            <button class="btn btn-outline-light btn-sm d-md-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminOffcanvas" aria-controls="adminOffcanvas" aria-label="Abrir menu de navegação">
+                <i class="bi bi-list fs-5"></i>
+            </button>
             <a class="navbar-brand font-heading text-white fw-bold d-flex align-items-center gap-2" href="{{ route('admin.dashboard') }}">
                 <span class="badge bg-danger p-2"><i class="bi bi-shield-lock-fill"></i> ADMIN</span> FundMe Angola
             </a>
             <div class="d-flex align-items-center gap-3">
-                <span class="text-light small"><i class="bi bi-person-badge me-1"></i> {{ auth()->user()->name }} ({{ ucfirst(auth()->user()->role) }})</span>
+                <span class="text-light small d-none d-sm-inline"><i class="bi bi-person-badge me-1"></i> {{ auth()->user()->name }} ({{ ucfirst(auth()->user()->role) }})</span>
                 <a href="{{ route('home') }}" class="btn btn-outline-light btn-sm" target="_blank"><i class="bi bi-box-arrow-up-right me-1"></i> Ver Site Público</a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
@@ -30,52 +38,22 @@
         </div>
     </nav>
 
+    <!-- Mobile navigation drawer (below the md breakpoint, where the sidebar column is hidden) -->
+    <div class="offcanvas offcanvas-start admin-sidebar" tabindex="-1" id="adminOffcanvas" aria-labelledby="adminOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-white" id="adminOffcanvasLabel">Navegação</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+        </div>
+        <div class="offcanvas-body">
+            @include('layouts.admin_nav')
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
+            <!-- Sidebar (md and up) -->
             <div class="col-md-3 col-lg-2 admin-sidebar p-3 d-none d-md-block">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
-                            <i class="bi bi-grid-fill"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.campaigns*') ? 'active' : '' }}" href="{{ route('admin.campaigns') }}">
-                            <i class="bi bi-folder-check"></i> Campanhas Médicas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.payments*') ? 'active' : '' }}" href="{{ route('admin.payments') }}">
-                            <i class="bi bi-bank"></i> Destino dos Fundos
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.donations*') ? 'active' : '' }}" href="{{ route('admin.donations') }}">
-                            <i class="bi bi-heart-fill text-danger"></i> Doações
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.utilizadores*') ? 'active' : '' }}" href="{{ route('admin.users') }}">
-                            <i class="bi bi-people-fill"></i> Utilizadores
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.reports*') ? 'active' : '' }}" href="{{ route('admin.reports') }}">
-                            <i class="bi bi-exclamation-octagon-fill text-warning"></i> Denúncias
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.documents*') ? 'active' : '' }}" href="{{ route('admin.documents') }}">
-                            <i class="bi bi-file-earmark-lock-fill text-info"></i> Documentos Privados
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.logs*') ? 'active' : '' }}" href="{{ route('admin.logs') }}">
-                            <i class="bi bi-journal-text"></i> Audit Logs
-                        </a>
-                    </li>
-                </ul>
+                @include('layouts.admin_nav')
             </div>
 
             <!-- Content Area -->
@@ -94,12 +72,19 @@
                     </div>
                 @endif
 
+                @if(session('info'))
+                    <div class="alert alert-info alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <i class="bi bi-info-circle-fill me-2"></i> {{ session('info') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
                 @yield('content')
             </main>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>

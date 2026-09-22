@@ -91,13 +91,13 @@
                 A FundMe Angola não é uma rede de divulgação informal. Cada campanha aprovada passa por rigorosa triagem para combater fraudes e proteger a imagem e a privacidade de pacientes vulneráveis.
             </p>
             <div class="row g-4 mt-2">
-                <div class="col-md-6">
+                <div id="privacidade" class="col-md-6">
                     <div class="p-3 bg-light rounded-3">
                         <h6 class="fw-bold text-dark"><i class="bi bi-lock-fill text-primary me-1"></i> Armazenamento Privado de Ficheiros Médicos</h6>
                         <p class="small text-dark opacity-75 mb-0">Relatórios médicos, dados bancários e BI não são disponibilizados publicamente no site. O acesso é exclusivo do administrador e verificadores credenciados.</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div id="destino" class="col-md-6">
                     <div class="p-3 bg-light rounded-3">
                         <h6 class="fw-bold text-dark"><i class="bi bi-building-check text-success me-1"></i> Destinação Direta às Instituições</h6>
                         <p class="small text-dark opacity-75 mb-0">Sempre que possível, os pagamentos acumulados são efetuados diretamente às contas oficiais dos hospitais ou clínicas com base nas faturas apresentadas.</p>

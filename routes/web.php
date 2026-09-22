@@ -77,6 +77,7 @@ Route::middleware(['auth', 'verifier'])->prefix('admin')->name('admin.')->group(
     Route::post('/doacoes/{donation}/confirmar-manual', [AdminController::class, 'confirmDonation'])->name('donations.confirm_manual');
 
     Route::get('/denuncias', [AdminController::class, 'reports'])->name('reports');
+    Route::get('/denuncias/{report}/evidencia', [AdminController::class, 'downloadReportEvidence'])->name('reports.evidence');
     Route::post('/denuncias/{report}/status', [AdminController::class, 'updateReport'])->name('reports.update_status');
 
     Route::get('/documentos', [AdminController::class, 'documents'])->name('documents');

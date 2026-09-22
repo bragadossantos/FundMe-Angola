@@ -13,10 +13,12 @@
 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
     <form action="{{ route('admin.users') }}" method="GET" class="row g-3 mb-4">
         <div class="col-md-6">
-            <input type="text" name="q" value="{{ request('q') }}" class="form-control" placeholder="Pesquisar por nome ou email...">
+            <label for="users_filter_q" class="visually-hidden">Pesquisar por nome ou email</label>
+            <input type="text" id="users_filter_q" name="q" value="{{ request('q') }}" class="form-control" placeholder="Pesquisar por nome ou email...">
         </div>
         <div class="col-md-4">
-            <select name="role" class="form-select">
+            <label for="users_filter_role" class="visually-hidden">Filtrar por função</label>
+            <select id="users_filter_role" name="role" class="form-select">
                 <option value="">Todas as Funções</option>
                 <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Administrador</option>
                 <option value="verifier" {{ request('role') === 'verifier' ? 'selected' : '' }}>Verificador</option>
@@ -56,19 +58,21 @@
                             <span class="badge {{ $user->status === 'active' ? 'bg-success' : 'bg-danger' }}">{{ ucfirst($user->status) }}</span>
                         </td>
                         <td>
-                            <form action="{{ route('admin.users.update_role', $user->id) }}" method="POST" class="d-flex gap-2">
+                            <form action="{{ route('admin.users.update_role', $user->id) }}" method="POST" class="d-flex gap-2" onsubmit="return confirm('Confirma a alteração de função/estado de {{ addslashes($user->name) }}?');">
                                 @csrf
-                                <select name="role" class="form-select form-select-sm" style="width: 120px;">
+                                <label for="user_role_{{ $user->id }}" class="visually-hidden">Função de {{ $user->name }}</label>
+                                <select id="user_role_{{ $user->id }}" name="role" class="form-select form-select-sm" style="width: 120px;">
                                     <option value="donor" {{ $user->role === 'donor' ? 'selected' : '' }}>Doador</option>
                                     <option value="applicant" {{ $user->role === 'applicant' ? 'selected' : '' }}>Solicitante</option>
                                     <option value="verifier" {{ $user->role === 'verifier' ? 'selected' : '' }}>Verificador</option>
                                     <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
                                 </select>
-                                <select name="status" class="form-select form-select-sm" style="width: 100px;">
+                                <label for="user_status_{{ $user->id }}" class="visually-hidden">Estado de {{ $user->name }}</label>
+                                <select id="user_status_{{ $user->id }}" name="status" class="form-select form-select-sm" style="width: 100px;">
                                     <option value="active" {{ $user->status === 'active' ? 'selected' : '' }}>Ativo</option>
                                     <option value="suspended" {{ $user->status === 'suspended' ? 'selected' : '' }}>Suspenso</option>
                                 </select>
-                                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-save"></i></button>
+                                <button type="submit" class="btn btn-sm btn-outline-primary" aria-label="Guardar alterações de {{ $user->name }}"><i class="bi bi-save"></i></button>
                             </form>
                         </td>
                     </tr>

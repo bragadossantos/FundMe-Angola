@@ -30,21 +30,21 @@
                         @csrf
 
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Endereço de Correio Eletrónico (Email)</label>
+                            <label for="login_email" class="form-label small fw-bold">Endereço de Correio Eletrónico (Email)</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
-                                <input type="email" name="email" value="{{ old('email') }}" class="form-control bg-light" placeholder="exemplo@dominio.ao" required autofocus>
+                                <input type="email" id="login_email" name="email" value="{{ old('email') }}" class="form-control bg-light" placeholder="exemplo@dominio.ao" required autofocus>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <label class="form-label small fw-bold mb-0">Palavra-passe</label>
+                                <label for="login_password" class="form-label small fw-bold mb-0">Palavra-passe</label>
                                 <a href="{{ route('forgot_password') }}" class="small text-primary text-decoration-none">Esqueceu a palavra-passe?</a>
                             </div>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
-                                <input type="password" name="password" class="form-control bg-light" placeholder="••••••••" required>
+                                <input type="password" id="login_password" name="password" class="form-control bg-light" placeholder="••••••••" required>
                             </div>
                         </div>
 

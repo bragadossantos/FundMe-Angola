@@ -64,9 +64,17 @@
                                             {{ $rep->description }}
                                         </div>
 
+                                        @if($rep->evidence_file_path)
+                                            <a href="{{ route('admin.reports.evidence', $rep->id) }}" class="btn btn-outline-secondary btn-sm mb-3">
+                                                <i class="bi bi-paperclip me-1"></i> Descarregar Ficheiro de Evidência Anexado
+                                            </a>
+                                        @else
+                                            <p class="small text-muted mb-3"><i class="bi bi-paperclip me-1"></i> Nenhum ficheiro de evidência foi anexado.</p>
+                                        @endif
+
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold small">Alterar Estado da Denúncia *</label>
-                                            <select name="status" class="form-select" required>
+                                            <label for="report_status_{{ $rep->id }}" class="form-label fw-bold small">Alterar Estado da Denúncia *</label>
+                                            <select id="report_status_{{ $rep->id }}" name="status" class="form-select" required>
                                                 <option value="pending" {{ $rep->status === 'pending' ? 'selected' : '' }}>Pendente</option>
                                                 <option value="under_review" {{ $rep->status === 'under_review' ? 'selected' : '' }}>Em Análise</option>
                                                 <option value="resolved" {{ $rep->status === 'resolved' ? 'selected' : '' }}>Resolvida (Procedente)</option>
@@ -82,8 +90,8 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold small">Notas do Moderador</label>
-                                            <textarea name="admin_notes" class="form-control" rows="3" placeholder="Registe os detalhes da decisão...">{{ $rep->admin_notes }}</textarea>
+                                            <label for="report_notes_{{ $rep->id }}" class="form-label fw-bold small">Notas do Moderador</label>
+                                            <textarea id="report_notes_{{ $rep->id }}" name="admin_notes" class="form-control" rows="3" placeholder="Registe os detalhes da decisão...">{{ $rep->admin_notes }}</textarea>
                                         </div>
                                     </div>
                                     <div class="modal-footer border-0">

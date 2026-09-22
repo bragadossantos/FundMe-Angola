@@ -1,7 +1,7 @@
 <div class="card card-campaign shadow-sm">
     <div class="position-relative">
         @if($campaign->featured_image)
-            <img src="{{ asset('storage/' . $campaign->featured_image) }}" class="card-campaign-img" alt="{{ $campaign->title }}">
+            <img src="{{ asset('storage/' . $campaign->featured_image) }}" class="card-campaign-img" alt="{{ $campaign->title }}" loading="lazy">
         @else
             <div class="card-campaign-img d-flex align-items-center justify-content-center bg-emerald-subtle text-success">
                 <i class="bi bi-hospital fs-1"></i>

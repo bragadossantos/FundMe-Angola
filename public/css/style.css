@@ -1,5 +1,7 @@
 /* FundMe Angola — Custom CSS Stylesheet */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+/* Inter / Outfit fonts are linked in <head> (layouts/app.blade.php and
+   layouts/admin.blade.php) instead of @import'd here, so they load in
+   parallel with this stylesheet rather than blocking on it. */
 
 :root {
     --primary-color: #0b4629;
@@ -27,6 +29,12 @@ body {
     background-color: var(--bg-light);
     color: var(--text-dark);
     line-height: 1.6;
+}
+
+/* Keep anchor-linked sections (e.g. footer links to #verificacao,
+   #privacidade, #destino) from landing underneath the sticky navbar. */
+[id] {
+    scroll-margin-top: 90px;
 }
 
 h1, h2, h3, h4, h5, h6, .font-heading {

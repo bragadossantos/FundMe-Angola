@@ -24,16 +24,16 @@
     <div class="card border-0 shadow-sm rounded-4 mb-4 p-3 bg-white">
         <form action="{{ route('campaigns.index') }}" method="GET" class="row g-3">
             <div class="col-md-4">
-                <label class="form-label small fw-bold text-muted">Pesquisar por Título ou Província</label>
+                <label for="filter_q" class="form-label small fw-bold text-muted">Pesquisar por Título ou Província</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                    <input type="text" name="q" value="{{ request('q') }}" class="form-control border-start-0 bg-light" placeholder="Ex: Cirurgia, Luanda, Maria...">
+                    <input type="text" id="filter_q" name="q" value="{{ request('q') }}" class="form-control border-start-0 bg-light" placeholder="Ex: Cirurgia, Luanda, Maria...">
                 </div>
             </div>
 
             <div class="col-md-2">
-                <label class="form-label small fw-bold text-muted">Província</label>
-                <select name="province" class="form-select bg-light">
+                <label for="filter_province" class="form-label small fw-bold text-muted">Província</label>
+                <select id="filter_province" name="province" class="form-select bg-light">
                     <option value="">Todas as Províncias</option>
                     @foreach($provinces as $prov)
                         <option value="{{ $prov }}" {{ request('province') === $prov ? 'selected' : '' }}>{{ $prov }}</option>
@@ -42,8 +42,8 @@
             </div>
 
             <div class="col-md-2">
-                <label class="form-label small fw-bold text-muted">Categoria</label>
-                <select name="category" class="form-select bg-light">
+                <label for="filter_category" class="form-label small fw-bold text-muted">Categoria</label>
+                <select id="filter_category" name="category" class="form-select bg-light">
                     <option value="">Todas</option>
                     <option value="cirurgia" {{ request('category') === 'cirurgia' ? 'selected' : '' }}>Cirurgia</option>
                     <option value="tratamento" {{ request('category') === 'tratamento' ? 'selected' : '' }}>Tratamento</option>
@@ -54,8 +54,8 @@
             </div>
 
             <div class="col-md-2">
-                <label class="form-label small fw-bold text-muted">Estado</label>
-                <select name="status" class="form-select bg-light">
+                <label for="filter_status" class="form-label small fw-bold text-muted">Estado</label>
+                <select id="filter_status" name="status" class="form-select bg-light">
                     <option value="">Todas Ativas</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Em Curso (Aberto)</option>
                     <option value="goal_reached" {{ request('status') === 'goal_reached' ? 'selected' : '' }}>Meta Atingida 🎯</option>
@@ -63,14 +63,26 @@
                 </select>
             </div>
 
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary-fundme w-100"><i class="bi bi-funnel-fill me-1"></i> Filtrar</button>
+            <div class="col-md-2">
+                <label for="filter_sort" class="form-label small fw-bold text-muted">Ordenar por</label>
+                <select id="filter_sort" name="sort" class="form-select bg-light">
+                    <option value="recent" {{ request('sort', 'recent') === 'recent' ? 'selected' : '' }}>Mais Recentes</option>
+                    <option value="urgent" {{ request('sort') === 'urgent' ? 'selected' : '' }}>Mais Urgentes</option>
+                    <option value="most_raised" {{ request('sort') === 'most_raised' ? 'selected' : '' }}>Mais Angariado</option>
+                </select>
+            </div>
+
+            <div class="col-md-12 d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary-fundme px-4"><i class="bi bi-funnel-fill me-1"></i> Filtrar</button>
             </div>
         </form>
     </div>
 
     <!-- Campaigns Grid -->
     @if($campaigns->count() > 0)
+        <p class="text-muted small mb-3">
+            <i class="bi bi-info-circle me-1"></i> {{ $campaigns->total() }} {{ $campaigns->total() === 1 ? 'campanha encontrada' : 'campanhas encontradas' }}
+        </p>
         <div class="row g-4 mb-4">
             @foreach($campaigns as $campaign)
                 <div class="col-md-6 col-lg-4">

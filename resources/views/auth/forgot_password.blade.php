@@ -19,8 +19,8 @@
                     <form action="{{ route('forgot_password') }}" method="POST">
                         @csrf
                         <div class="mb-4">
-                            <label class="form-label small fw-bold">Endereço de Correio Eletrónico (Email)</label>
-                            <input type="email" name="email" class="form-control bg-light" placeholder="exemplo@dominio.ao" required autofocus>
+                            <label for="forgot_email" class="form-label small fw-bold">Endereço de Correio Eletrónico (Email)</label>
+                            <input type="email" id="forgot_email" name="email" class="form-control bg-light" placeholder="exemplo@dominio.ao" required autofocus>
                         </div>
 
                         <button type="submit" class="btn btn-primary-fundme btn-lg w-100 py-3 mb-3 shadow">

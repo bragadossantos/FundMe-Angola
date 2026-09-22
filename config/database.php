@@ -16,7 +16,10 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    // ?: (not the plain env(..., default) form) so a present-but-empty env
+    // var doesn't resolve to a connection literally named '' — see the note
+    // in config/app.php on 'timezone' for why this matters on Vercel.
+    'default' => env('DB_CONNECTION') ?: 'sqlite',
 
     /*
     |--------------------------------------------------------------------------

@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL') ?: 'http://localhost',
 
     /*
     |--------------------------------------------------------------------------
@@ -65,7 +65,13 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+    // env('APP_TIMEZONE', 'UTC') would silently keep an empty string if the
+    // hosting platform has the variable present-but-blank (seen on Vercel) —
+    // env()'s default only kicks in when the variable is truly unset, and
+    // date_default_timezone_set('') breaks app boot. The `?:` fallback below
+    // treats blank the same as unset. Same reasoning applies to every other
+    // env(..., default) call in config/ that selects a driver/connection.
+    'timezone' => env('APP_TIMEZONE') ?: 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -78,11 +84,11 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE') ?: 'en',
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE') ?: 'en',
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => env('APP_FAKER_LOCALE') ?: 'en_US',
 
     /*
     |--------------------------------------------------------------------------
@@ -97,7 +103,12 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-    'key' => (str_starts_with((string) env('APP_KEY', ''), 'base64:') ? env('APP_KEY') : 'base64:dWR3dmV5cTFmOTRsd3E0Zzh4d3lhbmh6MWsybWRma2c='),
+    // Deliberately no fallback key here. A hardcoded default would be
+    // committed to the repo and therefore known to anyone with the source —
+    // every deployment that forgot to set a real APP_KEY would silently
+    // share the same encryption key for sessions/cookies. Laravel's normal
+    // behavior (throwing if APP_KEY is missing) is what we want instead.
+    'key' => env('APP_KEY'),
 
     'previous_keys' => [
         ...array_filter(
@@ -122,5 +133,20 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Deployment Migration Token
+    |--------------------------------------------------------------------------
+    |
+    | On a serverless host (e.g. Vercel) there is no shell to run
+    | `php artisan migrate` after a deploy the way the Docker/Render
+    | entrypoint does automatically. DeploymentController exposes a
+    | migration-runner route guarded by this token instead. Leave it unset
+    | to disable the route entirely (it always aborts with 403 if empty).
+    |
+    */
+
+    'deploy_token' => env('DEPLOY_MIGRATE_TOKEN'),
 
 ];

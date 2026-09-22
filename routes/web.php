@@ -9,6 +9,16 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DeploymentController;
+
+/*
+|--------------------------------------------------------------------------
+| Deployment Utilities (serverless hosts with no shell access)
+|--------------------------------------------------------------------------
+*/
+Route::get('/deploy/migrate', [DeploymentController::class, 'migrate'])
+    ->name('deploy.migrate')
+    ->middleware('throttle:5,1');
 
 /*
 |--------------------------------------------------------------------------

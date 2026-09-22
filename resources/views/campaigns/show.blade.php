@@ -4,7 +4,7 @@
 @section('meta_description', Str::limit($campaign->short_description, 150))
 @section('og_title', $campaign->title . ' — FundMe Angola')
 @section('og_description', Str::limit($campaign->short_description, 150))
-@section('og_image', $campaign->featured_image ? asset('storage/' . $campaign->featured_image) : asset('favicon.svg'))
+@section('og_image', $campaign->featured_image_url ?? asset('favicon.svg'))
 
 @section('content')
 <!-- Header Banner -->
@@ -49,7 +49,7 @@
             <!-- Featured Image -->
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
                 @if($campaign->featured_image)
-                    <img src="{{ asset('storage/' . $campaign->featured_image) }}" class="w-100 img-fluid" style="max-height: 420px; object-fit: cover;" alt="{{ $campaign->title }}">
+                    <img src="{{ $campaign->featured_image_url }}" class="w-100 img-fluid" style="max-height: 420px; object-fit: cover;" alt="{{ $campaign->title }}">
                 @else
                     <div class="py-5 text-center bg-emerald-subtle text-success">
                         <i class="bi bi-hospital display-1"></i>

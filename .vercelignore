@@ -1,0 +1,21 @@
+# Not needed at runtime on Vercel — vendor/ is rebuilt during the build step
+node_modules
+tests
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+!storage/framework/cache/.gitignore
+!storage/framework/sessions/.gitignore
+!storage/framework/views/.gitignore
+!storage/logs/.gitignore
+database/database.sqlite
+.git
+.github
+.env
+.env.*
+!.env.example
+CREDENCIAIS_DEMO.txt
+Dockerfile
+docker-entrypoint.sh
+render.yaml

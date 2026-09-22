@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Campaign extends Model
 {
@@ -118,6 +119,22 @@ class Campaign extends Model
     public function reports()
     {
         return $this->hasMany(Report::class);
+    }
+
+    /**
+     * Public URL for the featured image, resolved through whichever driver
+     * the "public" disk actually uses (local /storage symlink on a normal
+     * server, or an S3/R2 bucket URL on serverless hosts like Vercel —
+     * see config/filesystems.php). Never build this with asset('storage/..')
+     * directly, since that assumes the local driver.
+     */
+    public function getFeaturedImageUrlAttribute(): ?string
+    {
+        if (!$this->featured_image) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->featured_image);
     }
 
     // Calculated Progress
